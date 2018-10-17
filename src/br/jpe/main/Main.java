@@ -11,8 +11,9 @@ import br.jpe.main.core.ImageWriter;
 import java.io.IOException;
 
 /**
+ * Main program entry point
  *
- * @author Perin
+ * @author joaovperin
  */
 public class Main {
 
@@ -21,9 +22,9 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        final String imgName = "paisagem_colorful.png";
+        final String imgName = "lena.png";
         Image img = ImageLoader.fromResources(imgName).asOriginal();
-        ImageWriter.save("D:/Samples/results/prc_".concat(imgName), img);
+        ImageWriter.save("C:/Fontes/pessoal/ImageProcess/outputs/prc_".concat(imgName), img);
     }
 
 }
