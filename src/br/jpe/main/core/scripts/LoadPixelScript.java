@@ -14,41 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core;
+package br.jpe.main.core.scripts;
+
+import java.awt.image.BufferedImage;
 
 /**
- * An image bean
+ * A script used to process an image while it's loading, that is called once for
+ * each pixel of a matrix
  *
  * @author joaovperin
  */
-public class Image {
+@FunctionalInterface
+public interface LoadPixelScript {
 
-    private final double[][][] mtz;
-    private final int width;
-    private final int height;
-    private final int bands;
-
-    public Image(double[][][] mtz) {
-        this.mtz = mtz;
-        this.width = mtz.length;
-        this.height = mtz[0].length;
-        this.bands = mtz[0][0].length;
-    }
-
-    public double[][][] getMatrix() {
-        return mtz;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getBands() {
-        return bands;
-    }
+    public void run(double[][][] mtz, BufferedImage read, int i, int j);
 
 }

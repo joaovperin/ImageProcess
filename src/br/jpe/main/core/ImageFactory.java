@@ -1,29 +1,47 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2018 Perin
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package br.jpe.main.core;
 
-import br.jpe.main.core.scripts.ColoredProcessScript;
-import br.jpe.main.core.scripts.DecompositionProcessScript;
-import br.jpe.main.core.scripts.DesaturationProcessScript;
-import br.jpe.main.core.scripts.GrayscaleProcessScript;
-import br.jpe.main.core.scripts.SingleColorProcessScript;
+import br.jpe.main.core.scripts.load.ColoredProcessScript;
+import br.jpe.main.core.scripts.load.DecompositionProcessScript;
+import br.jpe.main.core.scripts.load.DesaturationProcessScript;
+import br.jpe.main.core.scripts.load.GrayscaleProcessScript;
+import br.jpe.main.core.scripts.load.SingleColorProcessScript;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
+ * A Factory for Image objects
  *
- * @author Perin
+ * @author joaovperin
  */
 public class ImageFactory {
 
-    // http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
+    private static final int DEFAULT_NUM_CHANNELS = 3;
+
     private final BufferedImage read;
 
     public ImageFactory(BufferedImage read) {
         this.read = read;
+    }
+
+    public Image empty(int width, int height) {
+        return new Image(new double[width][height][DEFAULT_NUM_CHANNELS]);
     }
 
     public Image asOriginal() {
@@ -70,7 +88,7 @@ public class ImageFactory {
         return runScript(read, SingleColorProcessScript.blue());
     }
 
-    private static Image runScript(BufferedImage read, PixelScript script) {
+    private static Image runScript(BufferedImage read, LoadPixelScript script) {
         WritableRaster raster = read.getRaster();
 
         int iLen = raster.getWidth();
