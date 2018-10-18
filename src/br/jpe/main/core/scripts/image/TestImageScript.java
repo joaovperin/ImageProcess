@@ -27,8 +27,8 @@ import br.jpe.main.core.scripts.ImageScript;
 public class TestImageScript implements ImageScript {
 
     @Override
-    public void run(double[][][] src) {
-        ImageProcessor.process(src, (dest, c, i, j) -> {
+    public void run(double[][][] mtz) {
+        ImageProcessor.process(mtz, (dest, c, i, j) -> {
             dest[i][j][0] = Math.min(c.getRed() + 87, 255);
             dest[i][j][1] = Math.min(c.getGreen() + 68, 255);
             dest[i][j][2] = Math.min(c.getBlue() + 32, 255);
