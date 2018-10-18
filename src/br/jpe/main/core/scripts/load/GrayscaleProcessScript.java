@@ -14,45 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load.scripts;
+package br.jpe.main.core.scripts.load;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import br.jpe.main.core.load.PixelLoadScript;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
- * A pixel script to load images as grayscale using decomposition method
+ * A pixel script to load images as grayscale using median method
  *
  * @author joaovperin
  */
-public class DecompositionProcessScript extends DesaturationProcessScript implements PixelLoadScript {
+public class GrayscaleProcessScript implements LoadPixelScript {
 
-    private final boolean max;
+    private final double pR;
+    private final double pG;
+    private final double pB;
 
-    private DecompositionProcessScript(boolean max) {
-        this.max = max;
-    }
-
-    public static final DecompositionProcessScript max() {
-        return new DecompositionProcessScript(true);
-    }
-
-    public static final DecompositionProcessScript min() {
-        return new DecompositionProcessScript(false);
+    public GrayscaleProcessScript(double pR, double pG, double pB) {
+        this.pR = pR;
+        this.pG = pG;
+        this.pB = pB;
     }
 
     @Override
     public void run(double[][][] mtz, BufferedImage img, int i, int j) {
         Color color = new Color(img.getRGB(i, j));
-
-        int value = (int) (max
-                ? maxValue(color.getRed(), color.getGreen(), color.getBlue())
-                : minValue(color.getRed(), color.getGreen(), color.getBlue()));
-
+        int median = (int) ((color.getRed() * pR + color.getGreen() * pG + color.getBlue() * pB) / (pR + pG + pB));
         int numBands = mtz[0][0].length;
         for (int n = 0; n < numBands; n++) {
-            mtz[i][j][n] = value;
+            mtz[i][j][n] = median;
         }
     }
-
 }

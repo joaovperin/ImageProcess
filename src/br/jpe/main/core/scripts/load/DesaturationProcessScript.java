@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load.scripts;
+package br.jpe.main.core.scripts.load;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import br.jpe.main.core.load.PixelLoadScript;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
  * A pixel script to load images as grayscale using desaturatin method
  *
  * @author joaovperin
  */
-public class DesaturationProcessScript implements PixelLoadScript {
+public class DesaturationProcessScript implements LoadPixelScript {
 
     @Override
     public void run(double[][][] mtz, BufferedImage img, int i, int j) {

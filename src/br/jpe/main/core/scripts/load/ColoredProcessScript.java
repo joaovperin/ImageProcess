@@ -14,36 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load.scripts;
+package br.jpe.main.core.scripts.load;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import br.jpe.main.core.load.PixelLoadScript;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
- * A pixel script to load images as grayscale using median method
+ * A pixel script to load colored images
  *
  * @author joaovperin
  */
-public class GrayscaleProcessScript implements PixelLoadScript {
-
-    private final double pR;
-    private final double pG;
-    private final double pB;
-
-    public GrayscaleProcessScript(double pR, double pG, double pB) {
-        this.pR = pR;
-        this.pG = pG;
-        this.pB = pB;
-    }
+public class ColoredProcessScript implements LoadPixelScript {
 
     @Override
     public void run(double[][][] mtz, BufferedImage img, int i, int j) {
         Color color = new Color(img.getRGB(i, j));
-        int median = (int) ((color.getRed() * pR + color.getGreen() * pG + color.getBlue() * pB) / (pR + pG + pB));
-        int numBands = mtz[0][0].length;
-        for (int n = 0; n < numBands; n++) {
-            mtz[i][j][n] = median;
-        }
+        mtz[i][j][0] = color.getRed();
+        mtz[i][j][1] = color.getGreen();
+        mtz[i][j][2] = color.getBlue();
     }
 }

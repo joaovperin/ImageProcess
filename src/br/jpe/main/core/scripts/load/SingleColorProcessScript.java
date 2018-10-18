@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load.scripts;
+package br.jpe.main.core.scripts.load;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import br.jpe.main.core.load.PixelLoadScript;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
  * A pixel script to load images as grayscale using single color picking method
  *
  * @author joaovperin
  */
-public class SingleColorProcessScript extends DesaturationProcessScript implements PixelLoadScript {
+public class SingleColorProcessScript extends DesaturationProcessScript implements LoadPixelScript {
 
     private static final int CHANNEL_RED = 1;
     private static final int CHANNEL_GREEN = 2;

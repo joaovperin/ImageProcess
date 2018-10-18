@@ -14,16 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.mid;
+package br.jpe.main.core.scripts;
 
 /**
- *
+ * A script that runs once for the image matrix
  *
  * @author joaovperin
  */
 @FunctionalInterface
-public interface MidScript {
+public interface ImageScript {
 
-    public double[][][] run(double[][][] mtz);
+    public void run(double[][][] mtz);
 
 }

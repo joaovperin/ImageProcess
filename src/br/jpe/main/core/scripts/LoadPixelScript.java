@@ -14,17 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load;
+package br.jpe.main.core.scripts;
 
 import java.awt.image.BufferedImage;
 
 /**
- * A simple script that iterates over each pixel of a matrix, used when loading images
+ * A script used to process an image while it's loading, that is called once for
+ * each pixel of a matrix
  *
  * @author joaovperin
  */
 @FunctionalInterface
-public interface PixelLoadScript {
+public interface LoadPixelScript {
 
     public void run(double[][][] mtz, BufferedImage read, int i, int j);
 

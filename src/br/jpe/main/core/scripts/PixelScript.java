@@ -14,24 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.load.scripts;
+package br.jpe.main.core.scripts;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import br.jpe.main.core.load.PixelLoadScript;
 
 /**
- * A pixel script to load colored images
+ * A simple script that iterates over each pixel of a matrix, used when loading
+ * images
  *
  * @author joaovperin
  */
-public class ColoredProcessScript implements PixelLoadScript {
+@FunctionalInterface
+public interface PixelScript {
 
-    @Override
-    public void run(double[][][] mtz, BufferedImage img, int i, int j) {
-        Color color = new Color(img.getRGB(i, j));
-        mtz[i][j][0] = color.getRed();
-        mtz[i][j][1] = color.getGreen();
-        mtz[i][j][2] = color.getBlue();
-    }
+    public void run(double[][][] mtz, Color c, int i, int j);
+
 }

@@ -16,18 +16,17 @@
  */
 package br.jpe.main.core;
 
-import br.jpe.main.core.load.scripts.ColoredProcessScript;
-import br.jpe.main.core.load.scripts.DecompositionProcessScript;
-import br.jpe.main.core.load.scripts.DesaturationProcessScript;
-import br.jpe.main.core.load.scripts.GrayscaleProcessScript;
-import br.jpe.main.core.load.scripts.SingleColorProcessScript;
+import br.jpe.main.core.scripts.load.ColoredProcessScript;
+import br.jpe.main.core.scripts.load.DecompositionProcessScript;
+import br.jpe.main.core.scripts.load.DesaturationProcessScript;
+import br.jpe.main.core.scripts.load.GrayscaleProcessScript;
+import br.jpe.main.core.scripts.load.SingleColorProcessScript;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import br.jpe.main.core.load.PixelLoadScript;
+import br.jpe.main.core.scripts.LoadPixelScript;
 
 /**
  * A Factory for Image objects
- * Reference: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
  *
  * @author joaovperin
  */
@@ -89,7 +88,7 @@ public class ImageFactory {
         return runScript(read, SingleColorProcessScript.blue());
     }
 
-    private static Image runScript(BufferedImage read, PixelLoadScript script) {
+    private static Image runScript(BufferedImage read, LoadPixelScript script) {
         WritableRaster raster = read.getRaster();
 
         int iLen = raster.getWidth();
