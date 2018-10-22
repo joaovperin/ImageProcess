@@ -13,6 +13,8 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.convolution.MedianFilterScript;
+import br.jpe.main.core.scripts.image.convolution.ModeFilterScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import java.awt.Color;
@@ -35,7 +37,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        geometricTransformationExampleTranslate();
+        convolutionMasksExample();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -128,6 +130,17 @@ public class Main {
                 applyScript(new TranslationTransformScript(40, 80, 0)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_geom_".concat(imgName), newImage);
+    }
+
+    private static void convolutionMasksExample() throws IOException {
+        // Load an image from the disk
+        final String imgName = "lena.png";
+        final Image original = ImageLoader.fromResources("images/" + imgName).asOriginal();
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(new ModeFilterScript(), new MedianFilterScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_conv_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {
