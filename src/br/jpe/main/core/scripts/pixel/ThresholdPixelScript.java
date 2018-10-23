@@ -22,10 +22,6 @@ import br.jpe.main.core.scripts.PixelScript;
 /**
  * A threshold pixel script, or the populary 'if' in Digital Image Processing :P
  *
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- *
  * @author joaovperin
  */
 public class ThresholdPixelScript implements PixelScript {

@@ -43,7 +43,7 @@ public class GaussianBlurFilterScript extends ConvolutionTransformScript {
     @Override
     protected void forEachConvolutedPixel(double[][][] mtz, int i, int j, int c, int kI, int kJ) {
         double pixelValue = mtz[i + kI - 1][j + kJ - 1][c];
-        sum += pixelValue * kernel[kI][kJ];
+        sum += pixelValue * kernel[0][kI][kJ];
     }
 
     @Override

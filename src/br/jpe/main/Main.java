@@ -16,6 +16,7 @@ import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
@@ -39,7 +40,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        convolutionMasksExample();
+        borderDetectionExamples();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -145,6 +146,27 @@ public class Main {
                 applyScript(new ThresholdPixelScript(120)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_convx_".concat(imgName), newImage);
+    }
+
+    private static void borderDetectionExamples() throws IOException {
+        final String imgName = "feevale_logo.jpg";
+        final Image original = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(new RobertsBorderDetectionScript(12)).
+                //                applyScript(new ThresholdPixelScript(120)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(imgName), newImage);
+
+        // Load an image from the disk
+        final String coinsImgName = "coins.jpg";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + coinsImgName).asAverageGreyscale();
+
+        Image coinsNewImage = ImageBuilder.create(coinsOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new RobertsBorderDetectionScript(2)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(coinsImgName), coinsNewImage);
     }
 
     private static String getOutputDirectory() {
