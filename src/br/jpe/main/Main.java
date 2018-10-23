@@ -10,10 +10,16 @@ import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImageProcessor;
 import br.jpe.main.core.ImageWriter;
+import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
+import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
+import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
+import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -33,9 +39,13 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        // Load an image from the disk
-        final String imgName = "raposa.jpg";
-        final Image original = ImageLoader.fromFile(new File("D:/Samples/" + imgName)).asOriginal();
+        convolutionMasksExample();
+    }
+
+    private static void chainedFiltersExample() throws IOException {
+        // Load an image from the disk (resources folder)
+        final String imgName = "fox.jpg";
+        final Image original = ImageLoader.fromResources(imgName).asOriginal();
 
         // An ImageScript
         ImageScript is1 = (double[][][] mtz) -> {
@@ -81,7 +91,67 @@ public class Main {
                 build();
 
         // Write the built image on the disk
-        ImageWriter.save("D:/Samples/results/prc_".concat(imgName), newImage);
+        ImageWriter.save(getOutputDirectory() + "prc_".concat(imgName), newImage);
     }
 
+    private static void geometricTransformationExampleCustom() throws IOException {
+        // Load an image from the disk
+        final String imgName = "fox.jpg";
+        final Image original = ImageLoader.fromResources(imgName).asOriginal();
+
+        // Geometric transformation script
+        ImageScript geom = new GeometricTransformScript() {
+            @Override
+            public double[][] getTransformMatrix(double[][][] mtz, int i, int j) {
+                return new double[][]{
+                    new double[]{1, 0, 0},
+                    new double[]{0, -1, 0},
+                    new double[]{0, 0, 1}
+                };
+            }
+        };
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(new RotationTransformScript(30)).
+                applyScript(new RotationTransformScript(30)).
+                applyScript(new RotationTransformScript(60)).
+                applyScript(new RotationTransformScript(30)).
+                applyScript(new RotationTransformScript(30)).
+                applyScript(geom).
+                build();
+        ImageWriter.save(getOutputDirectory() + "/prc_geom_".concat(imgName), newImage);
+    }
+
+    private static void geometricTransformationExampleTranslate() throws IOException {
+        // Load an image from the disk
+        final String imgName = "coffin.png";
+        final Image original = ImageLoader.fromResources("images/" + imgName).asOriginal();
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(new RotationTransformScript(-30)).
+                applyScript(new TranslationTransformScript(40, 80, 0)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_geom_".concat(imgName), newImage);
+    }
+
+    private static void convolutionMasksExample() throws IOException {
+        // Load an image from the disk
+        final String imgName = "lena.png";
+        final Image original = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(12, new GaussianBlurFilterScript()).
+                applyScript(new ModeBlurFilterScript(), new MedianBlurFilterScript()).
+                applyScript(new ThresholdPixelScript(120)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_convx_".concat(imgName), newImage);
+    }
+
+    private static String getOutputDirectory() {
+        String javaHome = System.getProperty("java.home");
+        if (javaHome != null && javaHome.contains("C:\\RECH")) {
+            return "T:/TMP/perinfeevale/img/";
+        }
+        return "D:/Samples/results/";
+    }
 }

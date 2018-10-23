@@ -36,8 +36,18 @@ public class ImageBuilder {
         return new Image(matrix);
     }
 
+    public ImageBuilder applyScript(int t, PixelScript... scripts) {
+        ImageProcessor.process(matrix, t, scripts);
+        return this;
+    }
+
     public ImageBuilder applyScript(PixelScript... scripts) {
         ImageProcessor.process(matrix, scripts);
+        return this;
+    }
+
+    public ImageBuilder applyScript(int t, ImageScript... scripts) {
+        ImageProcessor.process(matrix, t, scripts);
         return this;
     }
 
@@ -47,26 +57,13 @@ public class ImageBuilder {
     }
 
     public static ImageBuilder create(double[][][] source) {
-        double[][][] mtz = copy(source);
+        double[][][] mtz = ImageUtils.copy(source);
         return new ImageBuilder(mtz);
     }
 
     public static ImageBuilder create(Image image) {
-        double[][][] mtz = copy(image.getMatrix());
+        double[][][] mtz = ImageUtils.copy(image.getMatrix());
         return new ImageBuilder(mtz);
-    }
-
-    private static double[][][] copy(double[][][] source) {
-        int iLen = source.length;
-        int jLen = source[0].length;
-        int cLen = source[0][0].length;
-        double[][][] mtz = new double[iLen][jLen][cLen];
-        for (int i = 0; i < iLen; i++) {
-            for (int j = 0; j < jLen; j++) {
-                System.arraycopy(source[i][j], 0, mtz[i][j], 0, cLen);
-            }
-        }
-        return mtz;
     }
 
 }

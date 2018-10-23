@@ -28,20 +28,32 @@ import java.awt.Color;
 public class ImageProcessor {
 
     public static final void process(double[][][] src, ImageScript... scripts) {
+        process(src, 1, scripts);
+    }
+
+    public static final void process(double[][][] src, int t, ImageScript... scripts) {
         for (ImageScript s : scripts) {
-            s.run(src);
+            while (t-- > 0) {
+                s.run(src);
+            }
         }
     }
 
     public static final void process(double[][][] src, PixelScript... pixelScripts) {
+        process(src, 1, pixelScripts);
+    }
+
+    public static final void process(double[][][] src, int t, PixelScript... pixelScripts) {
         int iLen = src.length;
         int jLen = src[0].length;
 
-        for (int i = 0; i < iLen; i++) {
-            for (int j = 0; j < jLen; j++) {
-                Color color = getColor(src, i, j);
-                for (PixelScript p : pixelScripts) {
-                    p.run(src, color, i, j);
+        while (t-- > 0) {
+            for (int i = 0; i < iLen; i++) {
+                for (int j = 0; j < jLen; j++) {
+                    Color color = getColor(src, i, j);
+                    for (PixelScript p : pixelScripts) {
+                        p.run(src, color, i, j);
+                    }
                 }
             }
         }
