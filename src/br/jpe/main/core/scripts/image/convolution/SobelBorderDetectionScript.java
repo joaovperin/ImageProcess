@@ -19,26 +19,32 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * A Border detection algorithm as described by Roberts
+ * A Border detection algorithm as described by Sobel
+ *
+ * // UNDONE YET
+ * // UNDONE YET
+ * // UNDONE YET
+ * // UNDONE YET
+ *
  *
  * @author joaovperin
  */
-public class RobertsBorderDetectionScript extends ConvolutionTransformScript {
+public class SobelBorderDetectionScript extends ConvolutionTransformScript {
 
     private final int thresholdValue;
 
     private double gX;
     private double gY;
 
-    public RobertsBorderDetectionScript(int thresholdValue) {
+    public SobelBorderDetectionScript(int thresholdValue) {
         super(new double[][] {
-            new double[] { 0, 0, 0 },
-            new double[] { 0, -1, 0 },
-            new double[] { 0, 0, 1 }
+            new double[] { -1, 0, 1 },
+            new double[] { -2, 0, 2 },
+            new double[] { -1, 0, 1 }
         }, new double[][] {
+            new double[] { 1, 2, 1 },
             new double[] { 0, 0, 0 },
-            new double[] { 0, 0, -1 },
-            new double[] { 0, 1, 0 }
+            new double[] { -1, -2, -1 }
         });
         this.thresholdValue = thresholdValue;
     }

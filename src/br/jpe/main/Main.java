@@ -17,6 +17,7 @@ import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
+import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
@@ -104,10 +105,10 @@ public class Main {
         ImageScript geom = new GeometricTransformScript() {
             @Override
             public double[][] getTransformMatrix(double[][][] mtz, int i, int j) {
-                return new double[][]{
-                    new double[]{1, 0, 0},
-                    new double[]{0, -1, 0},
-                    new double[]{0, 0, 1}
+                return new double[][] {
+                    new double[] { 1, 0, 0 },
+                    new double[] { 0, -1, 0 },
+                    new double[] { 0, 0, 1 }
                 };
             }
         };
@@ -167,6 +168,29 @@ public class Main {
                 applyScript(new RobertsBorderDetectionScript(2)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(coinsImgName), coinsNewImage);
+
+        // Load an image from the disk
+        final String photographerImgName = "photographer.png";
+        final Image photographerOriginal = ImageLoader.fromResources("images/" + photographerImgName).
+                asAverageGreyscale();
+
+        Image photographerNewImage = ImageBuilder.create(photographerOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new RobertsBorderDetectionScript(20)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(photographerImgName), photographerNewImage);
+
+        // Load an image from the disk
+        final String sobelPhotographerImgName = "photographer.png";
+        final Image sobelPhotographerOriginal = ImageLoader.fromResources("images/" + sobelPhotographerImgName).
+                asAverageGreyscale();
+
+        Image sobelPhotographerNewImage = ImageBuilder.create(sobelPhotographerOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new SobelBorderDetectionScript(69)).
+                build();
+        ImageWriter.
+                save(getOutputDirectory() + "prc_sobel_".concat(sobelPhotographerImgName), sobelPhotographerNewImage);
     }
 
     private static String getOutputDirectory() {
