@@ -47,11 +47,11 @@ public class ImageProcessor {
         int iLen = src.length;
         int jLen = src[0].length;
 
-        for (int i = 0; i < iLen; i++) {
-            for (int j = 0; j < jLen; j++) {
-                Color color = getColor(src, i, j);
-                for (PixelScript p : pixelScripts) {
-                    while (t-- > 0) {
+        while (t-- > 0) {
+            for (int i = 0; i < iLen; i++) {
+                for (int j = 0; j < jLen; j++) {
+                    Color color = getColor(src, i, j);
+                    for (PixelScript p : pixelScripts) {
                         p.run(src, color, i, j);
                     }
                 }

@@ -18,6 +18,7 @@ import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
+import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.awt.Color;
 import java.io.IOException;
 
@@ -42,8 +43,8 @@ public class Main {
     }
 
     private static void chainedFiltersExample() throws IOException {
-        // Load an image from the disk
-        final String imgName = "raposa.jpg";
+        // Load an image from the disk (resources folder)
+        final String imgName = "fox.jpg";
         final Image original = ImageLoader.fromResources(imgName).asOriginal();
 
         // An ImageScript
@@ -95,7 +96,7 @@ public class Main {
 
     private static void geometricTransformationExampleCustom() throws IOException {
         // Load an image from the disk
-        final String imgName = "raposa.jpg";
+        final String imgName = "fox.jpg";
         final Image original = ImageLoader.fromResources(imgName).asOriginal();
 
         // Geometric transformation script
@@ -136,11 +137,12 @@ public class Main {
     private static void convolutionMasksExample() throws IOException {
         // Load an image from the disk
         final String imgName = "lena.png";
-        final Image original = ImageLoader.fromResources("images/" + imgName).asOriginal();
+        final Image original = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
 
         Image newImage = ImageBuilder.create(original).
                 applyScript(12, new GaussianBlurFilterScript()).
                 applyScript(new ModeBlurFilterScript(), new MedianBlurFilterScript()).
+                applyScript(new ThresholdPixelScript(120)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_convx_".concat(imgName), newImage);
     }
