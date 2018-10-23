@@ -13,8 +13,9 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
-import br.jpe.main.core.scripts.image.convolution.MedianFilterScript;
-import br.jpe.main.core.scripts.image.convolution.ModeFilterScript;
+import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import java.awt.Color;
@@ -101,10 +102,10 @@ public class Main {
         ImageScript geom = new GeometricTransformScript() {
             @Override
             public double[][] getTransformMatrix(double[][][] mtz, int i, int j) {
-                return new double[][] {
-                    new double[] { 1, 0, 0 },
-                    new double[] { 0, -1, 0 },
-                    new double[] { 0, 0, 1 }
+                return new double[][]{
+                    new double[]{1, 0, 0},
+                    new double[]{0, -1, 0},
+                    new double[]{0, 0, 1}
                 };
             }
         };
@@ -138,9 +139,10 @@ public class Main {
         final Image original = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
         Image newImage = ImageBuilder.create(original).
-                applyScript(new ModeFilterScript(), new MedianFilterScript()).
+                applyScript(12, new GaussianBlurFilterScript()).
+                applyScript(new ModeBlurFilterScript(), new MedianBlurFilterScript()).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_conv_".concat(imgName), newImage);
+        ImageWriter.save(getOutputDirectory() + "prc_convx_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {

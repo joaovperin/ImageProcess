@@ -36,8 +36,18 @@ public class ImageBuilder {
         return new Image(matrix);
     }
 
+    public ImageBuilder applyScript(int t, PixelScript... scripts) {
+        ImageProcessor.process(matrix, t, scripts);
+        return this;
+    }
+
     public ImageBuilder applyScript(PixelScript... scripts) {
         ImageProcessor.process(matrix, scripts);
+        return this;
+    }
+
+    public ImageBuilder applyScript(int t, ImageScript... scripts) {
+        ImageProcessor.process(matrix, t, scripts);
         return this;
     }
 

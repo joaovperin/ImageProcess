@@ -16,6 +16,10 @@
  */
 package br.jpe.main.core;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * A helper class with utilities for images and matrixes
  *
@@ -34,6 +38,26 @@ public class ImageUtils {
             }
         }
         return mtz;
+    }
+
+    public static final Map<Double, Integer> createHistogram(double[][] mtz) {
+        Map<Double, Integer> histogram = new HashMap<>();
+        final double iLen = mtz.length;
+        for (int i = 0; i < iLen; i++) {
+            final double jLen = mtz[i].length;
+            for (int j = 0; j < jLen; j++) {
+                final double v = mtz[i][j];
+                histogram.put(v, histogram.getOrDefault(v, -1) + 1);
+            }
+        }
+        return histogram;
+    }
+
+    public static final double calcMode(double[][] mtz) {
+        Map<Double, Integer> histogram = createHistogram(mtz);
+        Optional<Map.Entry<Double, Integer>> max = histogram.entrySet().stream().max((e1, e2) -> e1.getValue().
+                compareTo(e2.getValue()));
+        return max.map(Map.Entry::getKey).orElse(-1.0);
     }
 
     public static final double cos(int angle) {

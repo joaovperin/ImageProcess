@@ -19,19 +19,19 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * Apply a low-pass filter based on the median
+ * Apply a gaussian blur filter
  *
  * @author joaovperin
  */
-public class MedianFilterScript extends ConvolutionTransformScript {
+public class GaussianBlurFilterScript extends ConvolutionTransformScript {
 
     private int sum;
 
-    public MedianFilterScript() {
-        super(new double[][] {
-            new double[] { 1, 1, 1 },
-            new double[] { 1, 1, 1 },
-            new double[] { 1, 1, 1 }
+    public GaussianBlurFilterScript() {
+        super(new double[][]{
+            new double[]{1, 2, 1},
+            new double[]{2, 4, 2},
+            new double[]{1, 2, 1}
         });
     }
 
@@ -48,7 +48,7 @@ public class MedianFilterScript extends ConvolutionTransformScript {
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        mtz[i][j][c] = Math.round(sum / kernelSize);
+        mtz[i][j][c] = Math.min(Math.round(sum / 16), 255);
     }
 
 }
