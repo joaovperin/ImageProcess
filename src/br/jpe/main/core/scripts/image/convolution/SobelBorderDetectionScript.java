@@ -21,12 +21,6 @@ import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 /**
  * A Border detection algorithm as described by Sobel
  *
- * // UNDONE YET
- * // UNDONE YET
- * // UNDONE YET
- * // UNDONE YET
- *
- *
  * @author joaovperin
  */
 public class SobelBorderDetectionScript extends ConvolutionTransformScript {
@@ -65,11 +59,7 @@ public class SobelBorderDetectionScript extends ConvolutionTransformScript {
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
         double pixelValue = Math.sqrt(Math.pow(gX, 2) + Math.pow(gY, 2));
-        if (pixelValue > thresholdValue) {
-            mtz[i][j][c] = 255;
-        } else {
-            mtz[i][j][c] = 0;
-        }
+        mtz[i][j][c] = (pixelValue > thresholdValue) ? 255 : 0;
     }
 
 }
