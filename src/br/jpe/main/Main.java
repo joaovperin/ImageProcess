@@ -13,6 +13,8 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
+import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.KirschBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
@@ -43,7 +45,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        otherBorderDetectionExample();
+        erosionDilationFilterExample();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -222,6 +224,18 @@ public class Main {
                 applyScript(new RobinsonBorderDetectionScript(255)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_robinson_".concat(coinsImgName), coinsNewImage);
+    }
+
+    private static void erosionDilationFilterExample() throws IOException {
+        final String imgName = "test_img.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(2, new ErosionMorphScript()).
+                applyScript(new SobelBorderDetectionScript(180)).
+                applyScript(2, new DilationMorphScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_dilation".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {
