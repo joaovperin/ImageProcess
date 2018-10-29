@@ -16,7 +16,6 @@ import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
-import br.jpe.main.core.scripts.image.convolution.KirschBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
@@ -206,24 +205,42 @@ public class Main {
         Image claudiomiroMedianaNewImage = ImageBuilder.create(claudiomiroOriginal).
                 applyScript(new GaussianBlurFilterScript()).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_claudiomiro_gauss_".concat(claudiomiroImgName), claudiomiroMedianaNewImage);
+        ImageWriter.
+                save(getOutputDirectory() + "prc_claudiomiro_gauss_".concat(claudiomiroImgName), claudiomiroMedianaNewImage);
 
         Image sobelPhotographerNewImage = ImageBuilder.create(claudiomiroOriginal).
                 applyScript(new MedianBlurFilterScript()).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_claudiomiro_mediana_".concat(claudiomiroImgName), sobelPhotographerNewImage);
+        ImageWriter.
+                save(getOutputDirectory() + "prc_claudiomiro_mediana_".concat(claudiomiroImgName), sobelPhotographerNewImage);
     }
 
     private static void otherBorderDetectionExample() throws IOException {
         // Load an image from the disk
-        final String coinsImgName = "house.png";
+        final String coinsImgName = "lena.png";
         final Image coinsOriginal = ImageLoader.fromResources("images/" + coinsImgName).asAverageGreyscale();
 
         Image coinsNewImage = ImageBuilder.create(coinsOriginal).
-                applyScript(new KirschBorderDetectionScript(255)).
-                applyScript(new RobinsonBorderDetectionScript(255)).
+                //                applyScript(new KirschBorderDetectionScript(255)).
+                applyScript(new GaussianBlurFilterScript()).
+                applyScript(new GaussianBlurFilterScript()).
+                //                applyScript(new RobinsonBorderDetectionScript(255)).
+                applyScript(new RobinsonBorderDetectionScript(120)).
+                //                applyScript(new RobinsonBorderDetectionScript(120)).
+                //                applyScript(new SobelBorderDetectionScript(120)).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_robinson_".concat(coinsImgName), coinsNewImage);
+        ImageWriter.save(getOutputDirectory() + "prc_lenarobin_".concat(coinsImgName), coinsNewImage);
+    }
+
+    private static void comparativeBorderDetectionExample() throws IOException {
+        // Load an image from the disk
+        final String houseImgName = "house.png";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + houseImgName).asAverageGreyscale();
+
+        Image houseNewImage = ImageBuilder.create(coinsOriginal).
+                applyScript(new GaussianBlurFilterScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_house_".concat(houseImgName), houseNewImage);
     }
 
     private static void erosionDilationFilterExample() throws IOException {
