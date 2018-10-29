@@ -14,9 +14,11 @@ import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.KirschBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
+import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
@@ -41,7 +43,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        borderDetectionExamples();
+        otherBorderDetectionExample();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -191,6 +193,35 @@ public class Main {
                 build();
         ImageWriter.
                 save(getOutputDirectory() + "prc_sobel_".concat(sobelPhotographerImgName), sobelPhotographerNewImage);
+    }
+
+    private static void testExamples() throws IOException {
+        // Load an image from the disk
+        final String claudiomiroImgName = "claudiomiro.png";
+        final Image claudiomiroOriginal = ImageLoader.fromResources("images/" + claudiomiroImgName).
+                asAverageGreyscale();
+
+        Image claudiomiroMedianaNewImage = ImageBuilder.create(claudiomiroOriginal).
+                applyScript(new GaussianBlurFilterScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_claudiomiro_gauss_".concat(claudiomiroImgName), claudiomiroMedianaNewImage);
+
+        Image sobelPhotographerNewImage = ImageBuilder.create(claudiomiroOriginal).
+                applyScript(new MedianBlurFilterScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_claudiomiro_mediana_".concat(claudiomiroImgName), sobelPhotographerNewImage);
+    }
+
+    private static void otherBorderDetectionExample() throws IOException {
+        // Load an image from the disk
+        final String coinsImgName = "house.png";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + coinsImgName).asAverageGreyscale();
+
+        Image coinsNewImage = ImageBuilder.create(coinsOriginal).
+                applyScript(new KirschBorderDetectionScript(255)).
+                applyScript(new RobinsonBorderDetectionScript(255)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_robinson_".concat(coinsImgName), coinsNewImage);
     }
 
     private static String getOutputDirectory() {
