@@ -21,55 +21,39 @@ import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 /**
  * A Border detection algorithm as described by Marr and Hildreth
  *
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- *
  * @author joaovperin
  */
 public class MarrAndHildrethBorderDetectionScript extends ConvolutionTransformScript {
 
     private final int thresholdValue;
 
-    private double gX;
-    private double gY;
+    private double sum;
 
     public MarrAndHildrethBorderDetectionScript(int thresholdValue) {
         super(new double[][] {
-            new double[] { -1, 0, 1 },
-            new double[] { -2, 0, 2 },
-            new double[] { -1, 0, 1 }
-        }, new double[][] {
-            new double[] { 1, 2, 1 },
-            new double[] { 0, 0, 0 },
-            new double[] { -1, -2, -1 }
+            new double[] { 0, 0, -1, 0, 0 },
+            new double[] { 0, -1, -2, -1, 0 },
+            new double[] { -1, -2, 16, -2, -1 },
+            new double[] { 0, -1, -2, -1, 0 },
+            new double[] { 0, 0, -1, 0, 0 }
         });
         this.thresholdValue = thresholdValue;
     }
 
     @Override
     protected void forEachColorStart(double[][][] src, int i, int j, int c) {
-        gX = 0;
-        gY = 0;
+        sum = 0;
     }
 
     @Override
     protected void forEachConvolutedPixel(double[][][] mtz, int i, int j, int c, int kI, int kJ) {
         double pixelValue = mtz[i + kI - 1][j + kJ - 1][c];
-        gX += pixelValue * kernel[0][kI][kJ];
-        gY += pixelValue * kernel[1][kI][kJ];
+        sum += pixelValue * kernel[0][kI][kJ];
     }
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        double pixelValue = Math.sqrt(Math.pow(gX, 2) + Math.pow(gY, 2));
-        if (pixelValue > thresholdValue) {
-            mtz[i][j][c] = 255;
-        } else {
-            mtz[i][j][c] = 0;
-        }
+        mtz[i][j][c] = (sum > thresholdValue) ? 255 : 0;
     }
 
 }

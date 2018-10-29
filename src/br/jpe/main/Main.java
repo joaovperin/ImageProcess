@@ -16,6 +16,7 @@ import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.MarrAndHildrethBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
@@ -44,7 +45,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        erosionDilationFilterExample();
+        comparativeBorderDetectionExample();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -238,9 +239,9 @@ public class Main {
         final Image coinsOriginal = ImageLoader.fromResources("images/" + houseImgName).asAverageGreyscale();
 
         Image houseNewImage = ImageBuilder.create(coinsOriginal).
-                applyScript(new GaussianBlurFilterScript()).
+                applyScript(new MarrAndHildrethBorderDetectionScript(150)).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_house_".concat(houseImgName), houseNewImage);
+        ImageWriter.save(getOutputDirectory() + "prc_house_mar_".concat(houseImgName), houseNewImage);
     }
 
     private static void erosionDilationFilterExample() throws IOException {
