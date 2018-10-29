@@ -19,22 +19,28 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * A Border detection algorithm as described by Sobel
+ * A Border detection algorithm as described by Marr and Hildreth
+ *
+ * // UNTESTED
+ * // UNTESTED
+ * // UNTESTED
+ * // UNTESTED
+ * // UNTESTED
  *
  * @author joaovperin
  */
-public class SobelBorderDetectionScript extends ConvolutionTransformScript {
+public class MarrAndHildrethBorderDetectionScript extends ConvolutionTransformScript {
 
     private final int thresholdValue;
 
     private double gX;
     private double gY;
 
-    public SobelBorderDetectionScript(int thresholdValue) {
+    public MarrAndHildrethBorderDetectionScript(int thresholdValue) {
         super(new double[][] {
-            new double[] { 1, 0, -1 },
-            new double[] { 2, 0, -2 },
-            new double[] { 1, 0, -1 }
+            new double[] { -1, 0, 1 },
+            new double[] { -2, 0, 2 },
+            new double[] { -1, 0, 1 }
         }, new double[][] {
             new double[] { 1, 2, 1 },
             new double[] { 0, 0, 0 },
@@ -59,7 +65,11 @@ public class SobelBorderDetectionScript extends ConvolutionTransformScript {
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
         double pixelValue = Math.sqrt(Math.pow(gX, 2) + Math.pow(gY, 2));
-        mtz[i][j][c] = (pixelValue > thresholdValue) ? 255 : 0;
+        if (pixelValue > thresholdValue) {
+            mtz[i][j][c] = 255;
+        } else {
+            mtz[i][j][c] = 0;
+        }
     }
 
 }
