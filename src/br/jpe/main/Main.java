@@ -24,6 +24,7 @@ import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
+import br.jpe.main.core.scripts.image.skeletonization.StentifordSkeletonizationScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.awt.Color;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        comparativeBorderDetectionExample();
+        skeletonizationTransformExample();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -254,6 +255,17 @@ public class Main {
                 applyScript(2, new DilationMorphScript()).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_dilation".concat(imgName), newImage);
+    }
+
+    private static void skeletonizationTransformExample() throws IOException {
+        final String imgName = "x_pic.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(new ThresholdPixelScript(100)).
+                applyScript(new StentifordSkeletonizationScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_skeleton_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {
