@@ -16,7 +16,6 @@
  */
 package br.jpe.main.core.scripts.image;
 
-import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.ImageScript;
 
 /**
@@ -26,54 +25,53 @@ import br.jpe.main.core.scripts.ImageScript;
  */
 public abstract class SkeletonizationTransformScript implements ImageScript {
 
-    protected boolean change;
-    protected int step;
-
-    @Override
-    public final void run(double[][][] src) {
-        double[][][] mtz = ImageUtils.copy(src);
-
-        int iLen = mtz.length;
-        int jLen = mtz[0].length;
-        int cLen = mtz[0][0].length;
-
-        change = true;
-        step = 0;
-
-        while (change) {
-            change = false;
-            step++;
-            // Matrix and Color loop
-            for (int i = 1; i < iLen - 1; i++) {
-                for (int j = 1; j < jLen - 1; j++) {
-                    for (int c = 0; c < cLen; c++) {
-                        // Checks...
-                        if (mtz[i][j][c] == 255) {
-                            double[][] pixels = pixels(mtz, i, j, c);
-                            double v = Math.max(Math.min(calc(pixels, step), 255), 0);
-                            if (v != mtz[i][j][c]) {
-                                change = true;
-                            }
-                            src[i][j][c] = v;
-                        }
-                    }
-                }
-            }
-            src = ImageUtils.copy(src);
-            // The final step
-            if (step == 4) {
-                step = 0;
-            }
-        }
-    }
-
+//    protected boolean change;
+//    protected int step;
+//
+//    @Override
+//    public void run(double[][][] src) {
+//        double[][][] mtz = ImageUtils.copy(src);
+//
+//        int iLen = mtz.length;
+//        int jLen = mtz[0].length;
+//        int cLen = mtz[0][0].length;
+//
+//        change = true;
+//        step = 0;
+//
+//        while (change) {
+//            change = false;
+//            step++;
+//            // Matrix and Color loop
+//            for (int i = 1; i < iLen - 1; i++) {
+//                for (int j = 1; j < jLen - 1; j++) {
+//                    for (int c = 0; c < cLen; c++) {
+//                        // Checks...
+//                        if (mtz[i][j][c] == 255) {
+//                            double[][] pixels = pixels(mtz, i, j, c);
+//                            double v = Math.max(Math.min(calc(pixels, step), 255), 0);
+//                            if (v != mtz[i][j][c]) {
+//                                change = true;
+//                            }
+//                            src[i][j][c] = v;
+//                        }
+//                    }
+//                }
+//            }
+//            src = ImageUtils.copy(src);
+//            // The final step
+//            if (step == 4) {
+//                step = 0;
+//            }
+//        }
+//    }
     /**
      * Returns neighborhood
      *
      * @param pixels
      * @return int[]
      */
-    protected double[] neighborhood(double[][] pixels) {
+    protected double[] getNeighborhood(double[][] pixels) {
         final double higherValue = 255;
         double p2 = pixels[1][0] / higherValue;
         double p3 = pixels[2][0] / higherValue;
@@ -93,9 +91,9 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
      * @return boolean
      */
     protected boolean isEdge(double[] neighborhood) {
-        double np = neighborhood[0] + neighborhood[1] + neighborhood[2]
-                + neighborhood[3] + neighborhood[4] + neighborhood[5]
-                + neighborhood[6] + neighborhood[7];
+        double np = neighborhood[0] + neighborhood[1] + neighborhood[2] +
+                neighborhood[3] + neighborhood[4] + neighborhood[5] +
+                neighborhood[6] + neighborhood[7];
         return (np >= 2 && np <= 6) && isConnected(neighborhood);
     }
 
@@ -106,14 +104,14 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
      * @return boolean
      */
     protected boolean isConnected(double[] neighborhood) {
-        int sp = (neighborhood[0] < neighborhood[1] ? 1 : 0)
-                + (neighborhood[1] < neighborhood[2] ? 1 : 0)
-                + (neighborhood[2] < neighborhood[3] ? 1 : 0)
-                + (neighborhood[3] < neighborhood[4] ? 1 : 0)
-                + (neighborhood[4] < neighborhood[5] ? 1 : 0)
-                + (neighborhood[5] < neighborhood[6] ? 1 : 0)
-                + (neighborhood[6] < neighborhood[7] ? 1 : 0)
-                + (neighborhood[7] < neighborhood[0] ? 1 : 0);
+        int sp = (neighborhood[0] < neighborhood[1] ? 1 : 0) +
+                (neighborhood[1] < neighborhood[2] ? 1 : 0) +
+                (neighborhood[2] < neighborhood[3] ? 1 : 0) +
+                (neighborhood[3] < neighborhood[4] ? 1 : 0) +
+                (neighborhood[4] < neighborhood[5] ? 1 : 0) +
+                (neighborhood[5] < neighborhood[6] ? 1 : 0) +
+                (neighborhood[6] < neighborhood[7] ? 1 : 0) +
+                (neighborhood[7] < neighborhood[0] ? 1 : 0);
         return sp == 1;
     }
 

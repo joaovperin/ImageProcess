@@ -265,7 +265,7 @@ public class Main {
                 applyScript(new ThresholdPixelScript(100)).
                 applyScript(new StentifordSkeletonizationScript()).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_skeleton_".concat(imgName), newImage);
+        ImageWriter.save(getOutputDirectory() + "prc_skeleton_x_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {

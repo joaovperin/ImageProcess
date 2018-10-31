@@ -16,6 +16,7 @@
  */
 package br.jpe.main.core.scripts.image.skeletonization;
 
+import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
 
 /**
@@ -30,6 +31,47 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
     private final int STEP_3 = 3;
     private final int STEP_4 = 4;
 
+    @Override
+    public void run(double[][][] src) {
+        double[][][] mtz = ImageUtils.copy(src);
+
+        int iLen = mtz.length;
+        int jLen = mtz[0].length;
+        int cLen = mtz[0][0].length;
+
+        boolean change = true;
+        int step = 0;
+
+        while (change) {
+            change = false;
+            step++;
+            // Matrix and Color loop
+            for (int i = 1; i < iLen - 1; i++) {
+                for (int j = 1; j < jLen - 1; j++) {
+//                    for (int c = 0; c < cLen; c++) {
+                    // Checks...
+                    if (isHigher(mtz[i][j][0])) {
+                        double[][] pixels = pixels(mtz, i, j, 0);
+                        double v = Math.max(Math.min(calc(pixels, step), 255), 0);
+                        if (v != mtz[i][j][0]) {
+                            change = true;
+                        }
+                        for (int c = 0; c < cLen; c++) {
+                            src[i][j][c] = v;
+                        }
+                    }
+//                    }
+                }
+            }
+            // The final step
+            mtz = ImageUtils.copy(src);
+            if (step == 4) {
+                step = 0;
+            }
+        }
+
+    }
+
     /**
      * calculate the pixel value
      *
@@ -39,7 +81,7 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
      */
     @Override
     protected final double calc(double[][] pixels, int step) {
-        double[] neighborhood = neighborhood(pixels);
+        double[] neighborhood = getNeighborhood(pixels);
         if (!isConnected(neighborhood)) {
             return pixels[1][1];
         }
