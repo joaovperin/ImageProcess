@@ -16,7 +16,6 @@
  */
 package br.jpe.main.core.scripts.image.skeletonization;
 
-import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
 
 /**
@@ -25,45 +24,6 @@ import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
  * @author joaovperin
  */
 public class HoltSkeletonizationScript extends SkeletonizationTransformScript {
-
-    @Override
-    public void run(double[][][] src) {
-        double[][][] mtz = ImageUtils.copy(src);
-
-        int iLen = mtz.length;
-        int jLen = mtz[0].length;
-        int cLen = mtz[0][0].length;
-
-        boolean change = true;
-        int step = 0;
-
-        while (change) {
-            change = false;
-            step++;
-            // Matrix and Color loop
-            for (int i = 1; i < iLen - 1; i++) {
-                for (int j = 1; j < jLen - 1; j++) {
-                    for (int c = 0; c < cLen; c++) {
-                        // Checks...
-                        if (isHigher(mtz[i][j][0])) {
-                            double[][] pixels = pixels(mtz, i, j, 0);
-                            double v = Math.max(Math.min(calc(pixels, step), 255), 0);
-                            if (v != mtz[i][j][0]) {
-                                change = true;
-                            }
-                            src[i][j][c] = v;
-                        }
-                    }
-                }
-            }
-            // The final step
-            mtz = ImageUtils.copy(src);
-            if (step == STEP_2) {
-                step = 0;
-            }
-        }
-
-    }
 
     /**
      * calculate the pixel value
@@ -94,4 +54,10 @@ public class HoltSkeletonizationScript extends SkeletonizationTransformScript {
         return 0;
     }
 
+    @Override
+    protected final void checkStep() {
+        if (step == STEP_2) {
+            step = 0;
+        }
+    }
 }

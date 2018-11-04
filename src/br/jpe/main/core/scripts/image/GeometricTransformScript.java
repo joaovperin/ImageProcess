@@ -26,9 +26,12 @@ import br.jpe.main.core.scripts.ImageScript;
  */
 public abstract class GeometricTransformScript implements ImageScript {
 
+    private static final int DEF_BG_COLOR = 255;
+
     public abstract double[][] getTransformMatrix(double[][][] mtz, int i, int j);
-    public int getBackgroundColor(){
-        return 255;
+
+    public int getBackgroundColor() {
+        return DEF_BG_COLOR;
     }
 
     @Override
@@ -62,7 +65,8 @@ public abstract class GeometricTransformScript implements ImageScript {
                     System.arraycopy(src[nI][nJ], 0, mtz[i][j], 0, cLen);
                 } else {
                     for (int c = 0; c < cLen; c++) {
-                        mtz[i][j][c] = getBackgroundColor();
+                        final int bgColor = getBackgroundColor();
+                        mtz[i][j][c] = bgColor;
                     }
                 }
             }
