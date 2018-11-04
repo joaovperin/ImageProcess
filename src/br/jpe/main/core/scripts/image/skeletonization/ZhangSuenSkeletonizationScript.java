@@ -19,11 +19,11 @@ package br.jpe.main.core.scripts.image.skeletonization;
 import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
 
 /**
- * Apply a skeletonization script using the Stentiford technique
+ * Apply a skeletonization script using ZhangSuen's technique
  *
  * @author joaovperin
  */
-public class StentifordSkeletonizationScript extends SkeletonizationTransformScript {
+public class ZhangSuenSkeletonizationScript extends SkeletonizationTransformScript {
 
     /**
      * Calculate the pixel value
@@ -34,43 +34,25 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
      */
     @Override
     protected final double calcValue(double[][] pixels, int step) {
-        double[] neighborhood = getNeighborhood(pixels);
-        if (!isConnected(neighborhood)) {
-            return pixels[1][1];
-        }
-        double n = pixels[1][0];
-        double l = pixels[2][1];
-        double s = pixels[1][2];
-        double o = pixels[0][1];
-        double no = pixels[0][0];
-        if (step == STEP_1) {
-            if (!(!isHigher(n) && isHigher(s))) {
-                return pixels[1][1];
+        double[] n = getNeighborhood(pixels);
+        if (isEdge(n)) {
+            if (step == STEP_1) {
+                if ((n[0] * n[2] * n[4] == 0) && (n[2] * n[4] * n[6] == 0)) {
+                    return 0;
+                }
+            } else {
+                if ((n[4] * n[0] * n[2] == 0) && (n[2] * n[4] * n[6] == 0)) {
+                    return 0;
+                }
             }
         }
-        if (step == STEP_2) {
-            if (!(!isHigher(no) && isHigher(l))) {
-                return pixels[1][1];
-            }
-        }
-        if (step == STEP_3) {
-            if (!(!isHigher(s) & isHigher(n))) {
-                return pixels[1][1];
-            }
-        }
-        if (step == STEP_4) {
-            if (!(!isHigher(l) && isHigher(o))) {
-                return pixels[1][1];
-            }
-        }
-        return 0;
+        return pixels[1][1];
     }
 
     @Override
     protected final void checkStep() {
-        if (step == STEP_4) {
+        if (step == STEP_2) {
             step = 0;
         }
     }
-
 }

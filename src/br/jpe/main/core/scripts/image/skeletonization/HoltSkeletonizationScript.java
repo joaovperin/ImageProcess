@@ -26,11 +26,11 @@ import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
 public class HoltSkeletonizationScript extends SkeletonizationTransformScript {
 
     /**
-     * calculate the pixel value
+     * Calculate the pixel value
      *
      * @param pixels
      * @param step
-     * @return int
+     * @return double
      */
     @Override
     protected final double calcValue(double[][] pixels, int step) {

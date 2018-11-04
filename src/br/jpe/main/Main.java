@@ -271,12 +271,12 @@ public class Main {
     }
 
     private static void sandbox() throws IOException {
-        final String imgName = "can_park.png";
+        final String imgName = "x_pic.png";
         final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
 
         Image newImage = ImageBuilder.create(imgOriginal).
-                applyScript(new InvertColorPixelScript()).
                 applyScript(new ThresholdPixelScript(150)).
+                applyScript(new InvertColorPixelScript()).
                 applyScript(new HoltSkeletonizationScript()).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_sandbox_".concat(imgName), newImage);
