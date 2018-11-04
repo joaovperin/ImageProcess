@@ -21,12 +21,6 @@ import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 /**
  * A Border detection algorithm as described by Robinson
  *
- * // UNTESTED
- * // UNTESTED 
- * // UNTESTED 
- * // UNTESTED 
- * // UNTESTED
- *
  * @author joaovperin
  */
 public class RobinsonBorderDetectionScript extends ConvolutionTransformScript {

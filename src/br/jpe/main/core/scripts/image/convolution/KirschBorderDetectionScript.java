@@ -20,12 +20,6 @@ import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
  * A Border detection algorithm as described by Kirsch
- * 
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
- * // UNTESTED
  *
  * @author joaovperin
  */
