@@ -34,7 +34,7 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
     protected boolean change;
     protected int step;
 
-    protected abstract double calc(double[][] pixels, int step);
+    protected abstract double calcValue(double[][] pixels, int step);
 
     protected abstract void checkStep();
 
@@ -57,10 +57,10 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
                 for (int j = 1; j < jLen - 1; j++) {
                     for (int c = 0; c < cLen; c++) {
                         // Check if any modification
-                        if (isHigher(mtz[i][j][0])) {
-                            double[][] pixels = pixels(mtz, i, j, 0);
-                            double v = Math.max(Math.min(calc(pixels, step), 255), 0);
-                            if (v != mtz[i][j][0]) {
+                        if (isHigher(mtz[i][j][c])) {
+                            double[][] pixels = getPixels(mtz, i, j, c);
+                            double v = Math.max(Math.min(calcValue(pixels, step), 255), 0);
+                            if (v != mtz[i][j][c]) {
                                 change = true;
                             }
                             src[i][j][c] = v;
@@ -133,11 +133,11 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
      * @param c
      * @return {@code int[][]}
      */
-    protected static double[][] pixels(double[][][] mtz, int i, int j, int c) {
+    protected static double[][] getPixels(double[][][] mtz, int i, int j, int c) {
         double[][] pixels = new double[3][3];
         for (int x2 = 0; x2 < 3; x2++) {
             for (int y2 = 0; y2 < 3; y2++) {
-                pixels[x2][y2] = mtz[i + x2 - 1][j + y2 - 1][0];
+                pixels[x2][y2] = mtz[i + x2 - 1][j + y2 - 1][c];
             }
         }
         return pixels;

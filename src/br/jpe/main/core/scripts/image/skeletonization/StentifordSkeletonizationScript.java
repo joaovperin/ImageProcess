@@ -33,7 +33,7 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
      * @return int
      */
     @Override
-    protected final double calc(double[][] pixels, int step) {
+    protected final double calcValue(double[][] pixels, int step) {
         double[] neighborhood = getNeighborhood(pixels);
         if (!isConnected(neighborhood)) {
             return pixels[1][1];
