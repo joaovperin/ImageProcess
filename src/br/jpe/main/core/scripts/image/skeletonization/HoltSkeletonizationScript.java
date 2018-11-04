@@ -20,11 +20,11 @@ import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.image.SkeletonizationTransformScript;
 
 /**
- * Apply a skeletonization script using the Stentiford technique
+ * Apply a skeletonization script using Holt's technique
  *
  * @author joaovperin
  */
-public class StentifordSkeletonizationScript extends SkeletonizationTransformScript {
+public class HoltSkeletonizationScript extends SkeletonizationTransformScript {
 
     @Override
     public void run(double[][][] src) {
@@ -43,24 +43,22 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
             // Matrix and Color loop
             for (int i = 1; i < iLen - 1; i++) {
                 for (int j = 1; j < jLen - 1; j++) {
-//                    for (int c = 0; c < cLen; c++) {
-                    // Checks...
-                    if (isHigher(mtz[i][j][0])) {
-                        double[][] pixels = pixels(mtz, i, j, 0);
-                        double v = Math.max(Math.min(calc(pixels, step), 255), 0);
-                        if (v != mtz[i][j][0]) {
-                            change = true;
-                        }
-                        for (int c = 0; c < cLen; c++) {
+                    for (int c = 0; c < cLen; c++) {
+                        // Checks...
+                        if (isHigher(mtz[i][j][0])) {
+                            double[][] pixels = pixels(mtz, i, j, 0);
+                            double v = Math.max(Math.min(calc(pixels, step), 255), 0);
+                            if (v != mtz[i][j][0]) {
+                                change = true;
+                            }
                             src[i][j][c] = v;
                         }
                     }
-//                    }
                 }
             }
             // The final step
             mtz = ImageUtils.copy(src);
-            if (step == 4) {
+            if (step == STEP_2) {
                 step = 0;
             }
         }
@@ -77,31 +75,19 @@ public class StentifordSkeletonizationScript extends SkeletonizationTransformScr
     @Override
     protected final double calc(double[][] pixels, int step) {
         double[] neighborhood = getNeighborhood(pixels);
-        if (!isConnected(neighborhood)) {
+        if (!isEdge(neighborhood)) {
             return pixels[1][1];
         }
         double n = pixels[1][0];
         double l = pixels[2][1];
         double s = pixels[1][2];
         double o = pixels[0][1];
-        double no = pixels[0][0];
         if (step == STEP_1) {
-            if (!(!isHigher(n) && isHigher(s))) {
+            if (isHigher(l) && isHigher(s) && (isHigher(n) || isHigher(o))) {
                 return pixels[1][1];
             }
-        }
-        if (step == STEP_2) {
-            if (!(!isHigher(no) && isHigher(l))) {
-                return pixels[1][1];
-            }
-        }
-        if (step == STEP_3) {
-            if (!(!isHigher(s) & isHigher(n))) {
-                return pixels[1][1];
-            }
-        }
-        if (step == STEP_4) {
-            if (!(!isHigher(l) && isHigher(o))) {
+        } else if (step == STEP_2) {
+            if (isHigher(o) && isHigher(n) && (isHigher(s) || isHigher(l))) {
                 return pixels[1][1];
             }
         }

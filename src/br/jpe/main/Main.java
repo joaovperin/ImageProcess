@@ -24,7 +24,9 @@ import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
+import br.jpe.main.core.scripts.image.skeletonization.HoltSkeletonizationScript;
 import br.jpe.main.core.scripts.image.skeletonization.StentifordSkeletonizationScript;
+import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.awt.Color;
 import java.io.IOException;
@@ -46,7 +48,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        skeletonizationTransformExample();
+        sandbox();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -266,6 +268,18 @@ public class Main {
                 applyScript(new StentifordSkeletonizationScript()).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_skeleton_x_".concat(imgName), newImage);
+    }
+
+    private static void sandbox() throws IOException {
+        final String imgName = "can_park.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(new InvertColorPixelScript()).
+                applyScript(new ThresholdPixelScript(150)).
+                applyScript(new HoltSkeletonizationScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_sandbox_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {

@@ -25,6 +25,11 @@ import br.jpe.main.core.scripts.ImageScript;
  */
 public abstract class SkeletonizationTransformScript implements ImageScript {
 
+    protected static final int STEP_1 = 1;
+    protected static final int STEP_2 = 2;
+    protected static final int STEP_3 = 3;
+    protected static final int STEP_4 = 4;
+
 //    protected boolean change;
 //    protected int step;
 //
@@ -91,9 +96,9 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
      * @return boolean
      */
     protected boolean isEdge(double[] neighborhood) {
-        double np = neighborhood[0] + neighborhood[1] + neighborhood[2] +
-                neighborhood[3] + neighborhood[4] + neighborhood[5] +
-                neighborhood[6] + neighborhood[7];
+        double np = neighborhood[0] + neighborhood[1] + neighborhood[2]
+                + neighborhood[3] + neighborhood[4] + neighborhood[5]
+                + neighborhood[6] + neighborhood[7];
         return (np >= 2 && np <= 6) && isConnected(neighborhood);
     }
 
@@ -104,14 +109,14 @@ public abstract class SkeletonizationTransformScript implements ImageScript {
      * @return boolean
      */
     protected boolean isConnected(double[] neighborhood) {
-        int sp = (neighborhood[0] < neighborhood[1] ? 1 : 0) +
-                (neighborhood[1] < neighborhood[2] ? 1 : 0) +
-                (neighborhood[2] < neighborhood[3] ? 1 : 0) +
-                (neighborhood[3] < neighborhood[4] ? 1 : 0) +
-                (neighborhood[4] < neighborhood[5] ? 1 : 0) +
-                (neighborhood[5] < neighborhood[6] ? 1 : 0) +
-                (neighborhood[6] < neighborhood[7] ? 1 : 0) +
-                (neighborhood[7] < neighborhood[0] ? 1 : 0);
+        int sp = (neighborhood[0] < neighborhood[1] ? 1 : 0)
+                + (neighborhood[1] < neighborhood[2] ? 1 : 0)
+                + (neighborhood[2] < neighborhood[3] ? 1 : 0)
+                + (neighborhood[3] < neighborhood[4] ? 1 : 0)
+                + (neighborhood[4] < neighborhood[5] ? 1 : 0)
+                + (neighborhood[5] < neighborhood[6] ? 1 : 0)
+                + (neighborhood[6] < neighborhood[7] ? 1 : 0)
+                + (neighborhood[7] < neighborhood[0] ? 1 : 0);
         return sp == 1;
     }
 

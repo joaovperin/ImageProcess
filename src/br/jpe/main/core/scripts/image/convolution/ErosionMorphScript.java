@@ -51,15 +51,15 @@ public class ErosionMorphScript extends ConvolutionTransformScript {
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        double smallest = Integer.MAX_VALUE;
+        double largest = 0;
         for (double[] neighbour : neighbours) {
             for (int y = 0; y < neighbour.length; y++) {
-                if (neighbour[y] < smallest) {
-                    smallest = neighbour[y];
+                if (neighbour[y] > largest) {
+                    largest = neighbour[y];
                 }
             }
         }
-        mtz[i][j][c] = smallest;
+        mtz[i][j][c] = largest;
     }
 
 }
