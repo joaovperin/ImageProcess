@@ -16,7 +16,7 @@
  */
 package br.jpe.main.core.scripts.pixel;
 
-import java.awt.Color;
+import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.scripts.PixelScript;
 
 /**
@@ -33,7 +33,7 @@ public class ThresholdPixelScript implements PixelScript {
     }
 
     @Override
-    public void run(double[][][] mtz, Color color, int i, int j) {
+    public void run(double[][][] mtz, ImageColor color, int i, int j) {
         mtz[i][j][0] = applyThreshold(color.getRed(), thresholdValue);
         mtz[i][j][1] = applyThreshold(color.getGreen(), thresholdValue);
         mtz[i][j][2] = applyThreshold(color.getBlue(), thresholdValue);

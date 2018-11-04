@@ -16,7 +16,7 @@
  */
 package br.jpe.main.core.scripts.pixel;
 
-import java.awt.Color;
+import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.scripts.PixelScript;
 
 /**
@@ -27,7 +27,7 @@ import br.jpe.main.core.scripts.PixelScript;
 public class VinicperinPixelScript implements PixelScript {
 
     @Override
-    public void run(double[][][] mtz, Color color, int i, int j) {
+    public void run(double[][][] mtz, ImageColor color, int i, int j) {
         int contrast = 120;
 
         mtz[i][j][0] = brightnessOrContrast(calc(color.getRed(), 102), contrast * 0.66f);

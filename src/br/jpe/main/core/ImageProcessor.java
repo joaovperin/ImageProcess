@@ -18,7 +18,6 @@ package br.jpe.main.core;
 
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
-import java.awt.Color;
 
 /**
  * A helper class to process an image
@@ -27,8 +26,10 @@ import java.awt.Color;
  */
 public class ImageProcessor {
 
+    private static final int DEF_TIMES = 1;
+
     public static final void process(double[][][] src, ImageScript... scripts) {
-        process(src, 1, scripts);
+        process(src, DEF_TIMES, scripts);
     }
 
     public static final void process(double[][][] src, int t, ImageScript... scripts) {
@@ -40,7 +41,7 @@ public class ImageProcessor {
     }
 
     public static final void process(double[][][] src, PixelScript... pixelScripts) {
-        process(src, 1, pixelScripts);
+        process(src, DEF_TIMES, pixelScripts);
     }
 
     public static final void process(double[][][] src, int t, PixelScript... pixelScripts) {
@@ -50,7 +51,7 @@ public class ImageProcessor {
         while (t-- > 0) {
             for (int i = 0; i < iLen; i++) {
                 for (int j = 0; j < jLen; j++) {
-                    Color color = getColor(src, i, j);
+                    ImageColor color = getColor(src, i, j);
                     for (PixelScript p : pixelScripts) {
                         p.run(src, color, i, j);
                     }
@@ -59,8 +60,8 @@ public class ImageProcessor {
         }
     }
 
-    public static final Color getColor(double[][][] src, int i, int j) {
-        return new Color((int) src[i][j][0], (int) src[i][j][1], (int) src[i][j][2]);
+    public static final ImageColor getColor(double[][][] src, int i, int j) {
+        return new ImageColor((int) src[i][j][0], (int) src[i][j][1], (int) src[i][j][2]);
     }
 
 }

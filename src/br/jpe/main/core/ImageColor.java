@@ -14,28 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.jpe.main.core.scripts.pixel;
-
-import br.jpe.main.core.ImageColor;
-import br.jpe.main.core.scripts.PixelScript;
+package br.jpe.main.core;
 
 /**
- * A pixel script to invert the colors in an image
+ * An image color
  *
  * @author joaovperin
  */
-public class InvertColorPixelScript implements PixelScript {
+public class ImageColor {
 
-    @Override
-    public void run(double[][][] mtz, ImageColor color, int i, int j) {
-        mtz[i][j][0] = applyInversion(color.getRed());
-        mtz[i][j][1] = applyInversion(color.getGreen());
-        mtz[i][j][2] = applyInversion(color.getBlue());
+    private final int r;
+    private final int g;
+    private final int b;
+
+    public ImageColor() {
+        this(0, 0, 0);
     }
 
-    private static int applyInversion(int p) {
-        int pixelValue = 255 - p;
-        return Math.min(Math.max(pixelValue, 0), 255);
+    public ImageColor(int r, int g, int b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+
+    public int getRed() {
+        return r;
+    }
+
+    public int getGreen() {
+        return g;
+    }
+
+    public int getBlue() {
+        return b;
+    }
+
+    public static final ImageColor black() {
+        return new ImageColor(0, 0, 0);
+    }
+
+    public static final ImageColor white() {
+        return new ImageColor(255, 255, 255);
     }
 
 }

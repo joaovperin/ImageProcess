@@ -7,6 +7,7 @@ package br.jpe.main;
 
 import br.jpe.main.core.Image;
 import br.jpe.main.core.ImageBuilder;
+import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImageProcessor;
 import br.jpe.main.core.ImageWriter;
@@ -28,7 +29,6 @@ import br.jpe.main.core.scripts.image.skeletonization.HoltSkeletonizationScript;
 import br.jpe.main.core.scripts.image.skeletonization.StentifordSkeletonizationScript;
 import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
-import java.awt.Color;
 import java.io.IOException;
 
 /**
@@ -66,7 +66,7 @@ public class Main {
         };
 
         // A PixelScript
-        PixelScript ps1 = (double[][][] mtz, Color c, int i, int j) -> {
+        PixelScript ps1 = (double[][][] mtz, ImageColor c, int i, int j) -> {
             int contrast = 12;
             mtz[i][j][0] = Math.min(c.getRed() + contrast, 255);
             mtz[i][j][1] = Math.min(c.getGreen() + contrast, 255);
@@ -83,7 +83,7 @@ public class Main {
         };
 
         // Another PixelScript
-        PixelScript ps2 = (double[][][] mtz, Color c, int i, int j) -> {
+        PixelScript ps2 = (double[][][] mtz, ImageColor c, int i, int j) -> {
             int contrast = -33;
             mtz[i][j][0] = Math.min(c.getRed() + contrast, 255);
             mtz[i][j][1] = Math.min(c.getGreen() + contrast, 255);

@@ -16,7 +16,7 @@
  */
 package br.jpe.main.core.scripts;
 
-import java.awt.Color;
+import br.jpe.main.core.ImageColor;
 
 /**
  * A simple script that iterates over each pixel of a matrix, used when loading
@@ -27,6 +27,6 @@ import java.awt.Color;
 @FunctionalInterface
 public interface PixelScript {
 
-    public void run(double[][][] mtz, Color c, int i, int j);
+    public void run(double[][][] mtz, ImageColor c, int i, int j);
 
 }

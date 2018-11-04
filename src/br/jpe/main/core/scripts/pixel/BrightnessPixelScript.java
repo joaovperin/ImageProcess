@@ -16,6 +16,7 @@
  */
 package br.jpe.main.core.scripts.pixel;
 
+import br.jpe.main.core.ImageColor;
 import java.awt.Color;
 import br.jpe.main.core.scripts.PixelScript;
 
@@ -33,7 +34,7 @@ public class BrightnessPixelScript implements PixelScript {
     }
 
     @Override
-    public void run(double[][][] mtz, Color color, int i, int j) {
+    public void run(double[][][] mtz, ImageColor color, int i, int j) {
         mtz[i][j][0] = applyBright(color.getRed(), bright);
         mtz[i][j][1] = applyBright(color.getGreen(), bright);
         mtz[i][j][2] = applyBright(color.getBlue(), bright);
