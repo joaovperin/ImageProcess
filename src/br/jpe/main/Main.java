@@ -13,11 +13,20 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
+import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.MarrAndHildrethBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
+import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
+import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
+import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
+import br.jpe.main.core.scripts.image.skeletonization.HoltSkeletonizationScript;
+import br.jpe.main.core.scripts.image.skeletonization.StentifordSkeletonizationScript;
+import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.awt.Color;
 import java.io.IOException;
@@ -39,7 +48,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        convolutionMasksExample();
+        sandbox();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -103,10 +112,10 @@ public class Main {
         ImageScript geom = new GeometricTransformScript() {
             @Override
             public double[][] getTransformMatrix(double[][][] mtz, int i, int j) {
-                return new double[][]{
-                    new double[]{1, 0, 0},
-                    new double[]{0, -1, 0},
-                    new double[]{0, 0, 1}
+                return new double[][] {
+                    new double[] { 1, 0, 0 },
+                    new double[] { 0, -1, 0 },
+                    new double[] { 0, 0, 1 }
                 };
             }
         };
@@ -145,6 +154,132 @@ public class Main {
                 applyScript(new ThresholdPixelScript(120)).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_convx_".concat(imgName), newImage);
+    }
+
+    private static void borderDetectionExamples() throws IOException {
+        final String imgName = "feevale_logo.jpg";
+        final Image original = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(original).
+                applyScript(new RobertsBorderDetectionScript(12)).
+                //                applyScript(new ThresholdPixelScript(120)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(imgName), newImage);
+
+        // Load an image from the disk
+        final String coinsImgName = "coins.jpg";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + coinsImgName).asAverageGreyscale();
+
+        Image coinsNewImage = ImageBuilder.create(coinsOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new RobertsBorderDetectionScript(2)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(coinsImgName), coinsNewImage);
+
+        // Load an image from the disk
+        final String photographerImgName = "photographer.png";
+        final Image photographerOriginal = ImageLoader.fromResources("images/" + photographerImgName).
+                asAverageGreyscale();
+
+        Image photographerNewImage = ImageBuilder.create(photographerOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new RobertsBorderDetectionScript(20)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_roberts_".concat(photographerImgName), photographerNewImage);
+
+        // Load an image from the disk
+        final String sobelPhotographerImgName = "photographer.png";
+        final Image sobelPhotographerOriginal = ImageLoader.fromResources("images/" + sobelPhotographerImgName).
+                asAverageGreyscale();
+
+        Image sobelPhotographerNewImage = ImageBuilder.create(sobelPhotographerOriginal).
+                applyScript(6, new GaussianBlurFilterScript()).
+                applyScript(new SobelBorderDetectionScript(69)).
+                build();
+        ImageWriter.
+                save(getOutputDirectory() + "prc_sobel_".concat(sobelPhotographerImgName), sobelPhotographerNewImage);
+    }
+
+    private static void testExamples() throws IOException {
+        // Load an image from the disk
+        final String claudiomiroImgName = "claudiomiro.png";
+        final Image claudiomiroOriginal = ImageLoader.fromResources("images/" + claudiomiroImgName).
+                asAverageGreyscale();
+
+        Image claudiomiroMedianaNewImage = ImageBuilder.create(claudiomiroOriginal).
+                applyScript(new GaussianBlurFilterScript()).
+                build();
+        ImageWriter.
+                save(getOutputDirectory() + "prc_claudiomiro_gauss_".concat(claudiomiroImgName), claudiomiroMedianaNewImage);
+
+        Image sobelPhotographerNewImage = ImageBuilder.create(claudiomiroOriginal).
+                applyScript(new MedianBlurFilterScript()).
+                build();
+        ImageWriter.
+                save(getOutputDirectory() + "prc_claudiomiro_mediana_".concat(claudiomiroImgName), sobelPhotographerNewImage);
+    }
+
+    private static void otherBorderDetectionExample() throws IOException {
+        // Load an image from the disk
+        final String coinsImgName = "lena.png";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + coinsImgName).asAverageGreyscale();
+
+        Image coinsNewImage = ImageBuilder.create(coinsOriginal).
+                //                applyScript(new KirschBorderDetectionScript(255)).
+                applyScript(new GaussianBlurFilterScript()).
+                applyScript(new GaussianBlurFilterScript()).
+                //                applyScript(new RobinsonBorderDetectionScript(255)).
+                applyScript(new RobinsonBorderDetectionScript(120)).
+                //                applyScript(new RobinsonBorderDetectionScript(120)).
+                //                applyScript(new SobelBorderDetectionScript(120)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_lenarobin_".concat(coinsImgName), coinsNewImage);
+    }
+
+    private static void comparativeBorderDetectionExample() throws IOException {
+        // Load an image from the disk
+        final String houseImgName = "house.png";
+        final Image coinsOriginal = ImageLoader.fromResources("images/" + houseImgName).asAverageGreyscale();
+
+        Image houseNewImage = ImageBuilder.create(coinsOriginal).
+                applyScript(new MarrAndHildrethBorderDetectionScript(150)).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_house_mar_".concat(houseImgName), houseNewImage);
+    }
+
+    private static void erosionDilationFilterExample() throws IOException {
+        final String imgName = "test_img.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(2, new ErosionMorphScript()).
+                applyScript(new SobelBorderDetectionScript(180)).
+                applyScript(2, new DilationMorphScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_dilation".concat(imgName), newImage);
+    }
+
+    private static void skeletonizationTransformExample() throws IOException {
+        final String imgName = "x_pic.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(new ThresholdPixelScript(100)).
+                applyScript(new StentifordSkeletonizationScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_skeleton_x_".concat(imgName), newImage);
+    }
+
+    private static void sandbox() throws IOException {
+        final String imgName = "can_park.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(new InvertColorPixelScript()).
+                applyScript(new ThresholdPixelScript(150)).
+                applyScript(new HoltSkeletonizationScript()).
+                build();
+        ImageWriter.save(getOutputDirectory() + "prc_sandbox_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {

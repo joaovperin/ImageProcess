@@ -19,20 +19,25 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * Apply a low-pass filter based on the median
+ * A Border detection algorithm as described by Marr and Hildreth
  *
  * @author joaovperin
  */
-public class MedianBlurFilterScript extends ConvolutionTransformScript {
+public class MarrAndHildrethBorderDetectionScript extends ConvolutionTransformScript {
 
-    private int sum;
+    private final int thresholdValue;
 
-    public MedianBlurFilterScript() {
-        super(new double[][]{
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1}
+    private double sum;
+
+    public MarrAndHildrethBorderDetectionScript(int thresholdValue) {
+        super(new double[][] {
+            new double[] { 0, 0, -1, 0, 0 },
+            new double[] { 0, -1, -2, -1, 0 },
+            new double[] { -1, -2, 16, -2, -1 },
+            new double[] { 0, -1, -2, -1, 0 },
+            new double[] { 0, 0, -1, 0, 0 }
         });
+        this.thresholdValue = thresholdValue;
     }
 
     @Override
@@ -48,7 +53,7 @@ public class MedianBlurFilterScript extends ConvolutionTransformScript {
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        mtz[i][j][c] = Math.round(sum / kernelSize);
+        mtz[i][j][c] = (sum > thresholdValue) ? 255 : 0;
     }
 
 }

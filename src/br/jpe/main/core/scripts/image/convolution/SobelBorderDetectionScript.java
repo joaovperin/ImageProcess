@@ -19,36 +19,47 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * Apply a low-pass filter based on the median
+ * A Border detection algorithm as described by Sobel
  *
  * @author joaovperin
  */
-public class MedianBlurFilterScript extends ConvolutionTransformScript {
+public class SobelBorderDetectionScript extends ConvolutionTransformScript {
 
-    private int sum;
+    private final int thresholdValue;
 
-    public MedianBlurFilterScript() {
-        super(new double[][]{
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1}
+    private double gX;
+    private double gY;
+
+    public SobelBorderDetectionScript(int thresholdValue) {
+        super(new double[][] {
+            new double[] { 1, 0, -1 },
+            new double[] { 2, 0, -2 },
+            new double[] { 1, 0, -1 }
+        }, new double[][] {
+            new double[] { 1, 2, 1 },
+            new double[] { 0, 0, 0 },
+            new double[] { -1, -2, -1 }
         });
+        this.thresholdValue = thresholdValue;
     }
 
     @Override
     protected void forEachColorStart(double[][][] src, int i, int j, int c) {
-        sum = 0;
+        gX = 0;
+        gY = 0;
     }
 
     @Override
     protected void forEachConvolutedPixel(double[][][] mtz, int i, int j, int c, int kI, int kJ) {
         double pixelValue = mtz[i + kI - 1][j + kJ - 1][c];
-        sum += pixelValue * kernel[0][kI][kJ];
+        gX += pixelValue * kernel[0][kI][kJ];
+        gY += pixelValue * kernel[1][kI][kJ];
     }
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        mtz[i][j][c] = Math.round(sum / kernelSize);
+        double pixelValue = Math.sqrt(Math.pow(gX, 2) + Math.pow(gY, 2));
+        mtz[i][j][c] = (pixelValue > thresholdValue) ? 255 : 0;
     }
 
 }

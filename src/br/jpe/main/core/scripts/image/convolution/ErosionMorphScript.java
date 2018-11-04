@@ -19,36 +19,47 @@ package br.jpe.main.core.scripts.image.convolution;
 import br.jpe.main.core.scripts.image.ConvolutionTransformScript;
 
 /**
- * Apply a low-pass filter based on the median
+ * Apply an erosion morph script
  *
  * @author joaovperin
  */
-public class MedianBlurFilterScript extends ConvolutionTransformScript {
+public class ErosionMorphScript extends ConvolutionTransformScript {
 
-    private int sum;
+    private double[][] neighbours = new double[3][3];
 
-    public MedianBlurFilterScript() {
-        super(new double[][]{
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1},
-            new double[]{1, 1, 1}
+    public ErosionMorphScript() {
+        this(new double[][] {
+            new double[] { 0, 1, 0 },
+            new double[] { 1, 1, 1 },
+            new double[] { 0, 1, 0 }
         });
+    }
+
+    public ErosionMorphScript(double[][] dilationShape) {
+        super(dilationShape);
     }
 
     @Override
     protected void forEachColorStart(double[][][] src, int i, int j, int c) {
-        sum = 0;
+        neighbours = new double[3][3];
     }
 
     @Override
     protected void forEachConvolutedPixel(double[][][] mtz, int i, int j, int c, int kI, int kJ) {
-        double pixelValue = mtz[i + kI - 1][j + kJ - 1][c];
-        sum += pixelValue * kernel[0][kI][kJ];
+        neighbours[kI][kJ] = mtz[i + kI - 1][j + kJ - 1][c];
     }
 
     @Override
     protected void forEachColorEnd(double[][][] mtz, int i, int j, int c) {
-        mtz[i][j][c] = Math.round(sum / kernelSize);
+        double largest = 0;
+        for (double[] neighbour : neighbours) {
+            for (int y = 0; y < neighbour.length; y++) {
+                if (neighbour[y] > largest) {
+                    largest = neighbour[y];
+                }
+            }
+        }
+        mtz[i][j][c] = largest;
     }
 
 }

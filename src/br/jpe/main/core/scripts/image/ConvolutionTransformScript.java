@@ -26,16 +26,16 @@ import br.jpe.main.core.scripts.ImageScript;
  */
 public abstract class ConvolutionTransformScript implements ImageScript {
 
-    protected final double[][] kernel;
+    protected final double[][][] kernel;
 
     protected final int kiLen;
     protected final int kjLen;
     protected final int kernelSize;
 
-    public ConvolutionTransformScript(double[][] kernel) {
+    public ConvolutionTransformScript(double[][]... kernel) {
         this.kernel = kernel;
-        this.kiLen = kernel.length;
-        this.kjLen = kernel[0].length;
+        this.kiLen = kernel[0].length;
+        this.kjLen = kernel[0][0].length;
         this.kernelSize = kiLen * kjLen;
     }
 

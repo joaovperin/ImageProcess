@@ -20,27 +20,22 @@ import java.awt.Color;
 import br.jpe.main.core.scripts.PixelScript;
 
 /**
- * A threshold pixel script, or the populary 'if' in Digital Image Processing :P
+ * A pixel script to invert the colors in an image
  *
  * @author joaovperin
  */
-public class ThresholdPixelScript implements PixelScript {
-
-    private final int thresholdValue;
-
-    public ThresholdPixelScript(int thresholdValue) {
-        this.thresholdValue = thresholdValue;
-    }
+public class InvertColorPixelScript implements PixelScript {
 
     @Override
     public void run(double[][][] mtz, Color color, int i, int j) {
-        mtz[i][j][0] = applyThreshold(color.getRed(), thresholdValue);
-        mtz[i][j][1] = applyThreshold(color.getGreen(), thresholdValue);
-        mtz[i][j][2] = applyThreshold(color.getBlue(), thresholdValue);
+        mtz[i][j][0] = applyInversion(color.getRed());
+        mtz[i][j][1] = applyInversion(color.getGreen());
+        mtz[i][j][2] = applyInversion(color.getBlue());
     }
 
-    private static int applyThreshold(int p, int value) {
-        return p > value ? 255 : 0;
+    private static int applyInversion(int p) {
+        int pixelValue = 255 - p;
+        return Math.min(Math.max(pixelValue, 0), 255);
     }
 
 }
