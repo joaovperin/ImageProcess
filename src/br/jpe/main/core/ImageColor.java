@@ -69,6 +69,14 @@ public class ImageColor {
         return new ImageColor(255, 0, 0);
     }
 
+    public static final ImageColor green() {
+        return new ImageColor(0, 255, 0);
+    }
+
+    public static final ImageColor blue() {
+        return new ImageColor(0, 0, 255);
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

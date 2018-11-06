@@ -25,6 +25,7 @@ import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
+import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import br.jpe.main.core.scripts.image.skeletonization.HoltSkeletonizationScript;
@@ -292,6 +293,15 @@ public class Main {
                 applyScript(new FloodfillScript(new ImagePoint(160, 130), ImageColor.red())).
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_".concat(imgName), newImage);
+
+        PixelCountExtractionScript pixelCountExtractionScript = new PixelCountExtractionScript(ImageColor.red());
+        ImageBuilder.create(newImage).applyScript(pixelCountExtractionScript).build();
+        int count = pixelCountExtractionScript.count();
+
+        /* TODO: Create a ImageInfoExtractor class and InfoExtraction Scripts */
+        /* TODO: Adapt PixelCountExtractionScript to be one of these */
+        
+        System.out.println("***Count: " + count);
     }
 
     private static String getOutputDirectory() {
