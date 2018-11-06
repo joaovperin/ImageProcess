@@ -9,16 +9,16 @@ import br.jpe.main.core.Image;
 import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageLoader;
+import br.jpe.main.core.ImagePoint;
 import br.jpe.main.core.ImageProcessor;
 import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.FloodfillScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
-import br.jpe.main.core.scripts.image.convolution.FreiChenBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
-import br.jpe.main.core.scripts.image.convolution.KirschBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MarrAndHildrethBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.MedianBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
@@ -29,6 +29,7 @@ import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
 import br.jpe.main.core.scripts.image.skeletonization.HoltSkeletonizationScript;
 import br.jpe.main.core.scripts.image.skeletonization.StentifordSkeletonizationScript;
+import br.jpe.main.core.scripts.pixel.GreyscaleThresholdPixelScript;
 import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.io.IOException;
@@ -280,13 +281,17 @@ public class Main {
     }
 
     private static void sandbox() throws IOException {
-        final String imgName = "high_res_img.png";
-        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+        final String imgName = "forms_sample.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
         Image newImage = ImageBuilder.create(imgOriginal).
-                applyScript(new KirschBorderDetectionScript(190)).
+                applyScript(new SobelBorderDetectionScript(180)).
+                applyScript(new GreyscaleThresholdPixelScript(20)).
+                applyScript(3, new ErosionMorphScript()).
+                applyScript(3, new DilationMorphScript()).
+                applyScript(new FloodfillScript(new ImagePoint(160, 130), ImageColor.red())).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_sandbox_kirsch_".concat(imgName), newImage);
+        ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_".concat(imgName), newImage);
     }
 
     private static String getOutputDirectory() {

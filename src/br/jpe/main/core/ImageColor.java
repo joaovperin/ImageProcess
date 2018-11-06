@@ -49,12 +49,59 @@ public class ImageColor {
         return b;
     }
 
+    public double[] get() {
+        return new double[] { r, g, b };
+    }
+
+    public static final ImageColor fromArray(double[] m) {
+        return new ImageColor((int) m[0], (int) m[1], (int) m[2]);
+    }
+
     public static final ImageColor black() {
         return new ImageColor(0, 0, 0);
     }
 
     public static final ImageColor white() {
         return new ImageColor(255, 255, 255);
+    }
+
+    public static final ImageColor red() {
+        return new ImageColor(255, 0, 0);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + this.r;
+        hash = 79 * hash + this.g;
+        hash = 79 * hash + this.b;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ImageColor other = (ImageColor) obj;
+        if (this.r != other.r) {
+            return false;
+        }
+        if (this.g != other.g) {
+            return false;
+        }
+        return this.b == other.b;
+    }
+
+    @Override
+    public String toString() {
+        return "ImageColor{" + "r=" + r + ", g=" + g + ", b=" + b + '}';
     }
 
 }
