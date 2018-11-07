@@ -17,14 +17,14 @@
 package br.jpe.main.core;
 
 /**
- * Exception thrown when requesting info not found on an image
+ * Exception thrown when setting an information that already exists
  *
  * @author joaovperin
  */
-public class ImageInfoNotFoundException extends Exception {
+public class ImageInformationAlreadyExistsException extends RuntimeException {
 
-    public ImageInfoNotFoundException() {
-        super();
+    public ImageInformationAlreadyExistsException(String infoKey) {
+        super("KEY: " + infoKey);
     }
 
 }

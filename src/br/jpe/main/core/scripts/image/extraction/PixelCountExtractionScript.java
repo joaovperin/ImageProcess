@@ -29,9 +29,15 @@ import br.jpe.main.core.scripts.InfoExtractorScript;
 public class PixelCountExtractionScript implements InfoExtractorScript, ImageInfoConstants {
 
     private final ImageColor target;
+    private final String label;
 
     public PixelCountExtractionScript(ImageColor target) {
+        this(target, PIXEL_COUNT);
+    }
+
+    public PixelCountExtractionScript(ImageColor target, String label) {
         this.target = target;
+        this.label = label;
     }
 
     @Override
@@ -49,7 +55,7 @@ public class PixelCountExtractionScript implements InfoExtractorScript, ImageInf
                 }
             }
         }
-        info.put(PIXEL_COUNT, count);
+        info.put(label, count);
     }
 
 }

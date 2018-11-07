@@ -297,17 +297,14 @@ public class Main {
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_".concat(imgName), newImage);
 
-//        PixelCountExtractionScript pixelCountExtractionScript = new PixelCountExtractionScript(ImageColor.red());
-//        ImageBuilder.create(newImage).applyScript(pixelCountExtractionScript).build();
-//        int count = pixelCountExtractionScript.count();
-        /* TODO: Create a ImageInfoExtractor class and InfoExtraction Scripts */
- /* TODO: Adapt PixelCountExtractionScript to be one of these */
         ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
-                applyScript(new PixelCountExtractionScript(ImageColor.red())).
+                applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
+                applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).
                 extract();
 
-        int count = info.getInt(ImageInfoConstants.PIXEL_COUNT);
-        System.out.println("***Count: " + count);
+//        int count = info.getInt(ImageInfoConstants.PIXEL_COUNT);
+        System.out.println("***Red Count: " + info.get("P_RED"));
+        System.out.println("***Black Count: " + info.get("P_BLACK"));
 
     }
 

@@ -33,13 +33,26 @@ public class ImageInfo implements ImageInfoConstants {
     }
 
     public void put(String key, Object value) {
-        if (!info.containsKey(key)) {
-            info.put(key, value);
+        if (info.containsKey(key)) {
+            throw new ImageInformationAlreadyExistsException(key);
         }
+        info.put(key, value);
     }
 
     public int getInt(String key) {
         return Integer.parseInt(get(key));
+    }
+
+    public long getLong(String key) {
+        return Long.parseLong(get(key));
+    }
+
+    public float getFloat(String key) {
+        return Float.parseFloat(get(key));
+    }
+
+    public double getDouble(String key) {
+        return Double.parseDouble(get(key));
     }
 
     public String get(String key) {
