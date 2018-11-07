@@ -17,26 +17,26 @@
 package br.jpe.main.core.scripts.image.extraction;
 
 import br.jpe.main.core.ImageColor;
-import br.jpe.main.core.scripts.ImageScript;
+import br.jpe.main.core.ImageInfo;
+import br.jpe.main.core.ImageInfoConstants;
+import br.jpe.main.core.scripts.InfoExtractorScript;
 
 /**
  * An script able to make geometric transformations
  *
  * @author joaovperin
  */
-public class PixelCountExtractionScript implements ImageScript {
+public class PixelCountExtractionScript implements InfoExtractorScript, ImageInfoConstants {
 
     private final ImageColor target;
-
-    private int count;
 
     public PixelCountExtractionScript(ImageColor target) {
         this.target = target;
     }
 
     @Override
-    public final void run(double[][][] mtz) {
-        count = 0;
+    public final void run(double[][][] mtz, ImageInfo info) {
+        int count = 0;
 
         int iLen = mtz.length;
         int jLen = mtz[0].length;
@@ -49,10 +49,7 @@ public class PixelCountExtractionScript implements ImageScript {
                 }
             }
         }
-    }
-
-    public final int count() {
-        return count;
+        info.put(PIXEL_COUNT, count);
     }
 
 }

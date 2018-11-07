@@ -8,6 +8,9 @@ package br.jpe.main;
 import br.jpe.main.core.Image;
 import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageColor;
+import br.jpe.main.core.ImageInfo;
+import br.jpe.main.core.ImageInfoConstants;
+import br.jpe.main.core.ImageInfoExtractor;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImagePoint;
 import br.jpe.main.core.ImageProcessor;
@@ -294,14 +297,18 @@ public class Main {
                 build();
         ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_".concat(imgName), newImage);
 
-        PixelCountExtractionScript pixelCountExtractionScript = new PixelCountExtractionScript(ImageColor.red());
-        ImageBuilder.create(newImage).applyScript(pixelCountExtractionScript).build();
-        int count = pixelCountExtractionScript.count();
-
+//        PixelCountExtractionScript pixelCountExtractionScript = new PixelCountExtractionScript(ImageColor.red());
+//        ImageBuilder.create(newImage).applyScript(pixelCountExtractionScript).build();
+//        int count = pixelCountExtractionScript.count();
         /* TODO: Create a ImageInfoExtractor class and InfoExtraction Scripts */
-        /* TODO: Adapt PixelCountExtractionScript to be one of these */
-        
+ /* TODO: Adapt PixelCountExtractionScript to be one of these */
+        ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
+                applyScript(new PixelCountExtractionScript(ImageColor.red())).
+                extract();
+
+        int count = info.getInt(ImageInfoConstants.PIXEL_COUNT);
         System.out.println("***Count: " + count);
+
     }
 
     private static String getOutputDirectory() {

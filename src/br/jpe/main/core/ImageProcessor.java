@@ -51,17 +51,13 @@ public class ImageProcessor {
         while (t-- > 0) {
             for (int i = 0; i < iLen; i++) {
                 for (int j = 0; j < jLen; j++) {
-                    ImageColor color = getColor(src, i, j);
+                    ImageColor color = ImageColor.fromArray(src[i][j]);
                     for (PixelScript p : pixelScripts) {
                         p.run(src, color, i, j);
                     }
                 }
             }
         }
-    }
-
-    public static final ImageColor getColor(double[][][] src, int i, int j) {
-        return new ImageColor((int) src[i][j][0], (int) src[i][j][1], (int) src[i][j][2]);
     }
 
 }
