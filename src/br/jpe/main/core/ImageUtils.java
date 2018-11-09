@@ -19,6 +19,7 @@ package br.jpe.main.core;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 
 /**
  * A helper class with utilities for images and matrixes
@@ -66,6 +67,20 @@ public class ImageUtils {
 
     public static final double sin(int angle) {
         return Math.sin(Math.PI * angle / 180);
+    }
+
+    public static void push(Queue<ImagePoint> queue, double[][][] mtz, ImageColor targetColor, ImagePoint p) {
+        if (!inBounds(mtz, p)) {
+            return;
+        }
+        if (!ImageColor.fromArray(mtz[p.x][p.y]).equals(targetColor)) {
+            return;
+        }
+        queue.add(p);
+    }
+
+    public static boolean inBounds(double[][][] mtz, ImagePoint point) {
+        return point.x >= 0 && point.y >= 0 && point.x < mtz.length && point.y < mtz[0].length;
     }
 
 }

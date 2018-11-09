@@ -19,42 +19,45 @@ package br.jpe.main.core.scripts.image.extraction;
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageInfo;
 import br.jpe.main.core.ImageInfoConstants;
+import br.jpe.main.core.ImagePoint;
 import br.jpe.main.core.scripts.InfoExtractorScript;
 
 /**
- * An script to extract the number of pixels of a color in an image
+ * An script to calculate the area of a picture based on a color
  *
  * @author joaovperin
  */
-public class PixelCountExtractionScript implements InfoExtractorScript, ImageInfoConstants {
+public class AreaExtractionScript implements InfoExtractorScript, ImageInfoConstants {
 
-    private final ImageColor target;
+    private final ImagePoint seed;
     private final String label;
 
-    public PixelCountExtractionScript(ImageColor target) {
-        this(target, PIXEL_COUNT);
+    public AreaExtractionScript(ImagePoint seed) {
+        this(seed, PIXEL_COUNT);
     }
 
-    public PixelCountExtractionScript(ImageColor target, String label) {
-        this.target = target;
+    public AreaExtractionScript(ImagePoint seed, String label) {
+        this.seed = seed;
         this.label = label;
     }
 
     @Override
     public final void run(double[][][] mtz, ImageInfo info) {
         int count = 0;
+        ImageColor targetColor = ImageColor.fromArray(mtz[seed.x][seed.y]);
 
         int iLen = mtz.length;
         int jLen = mtz[0].length;
 
         for (int i = 0; i < iLen; i++) {
             for (int j = 0; j < jLen; j++) {
-                ImageColor pixelColor = ImageColor.fromArray(mtz[i][j]);
-                if (pixelColor.equals(target)) {
+                ImageColor color = ImageColor.fromArray(mtz[i][j]);
+                if (color.equals(targetColor)) {
                     count++;
                 }
             }
         }
+
         info.put(label, count);
     }
 

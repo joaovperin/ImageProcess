@@ -10,6 +10,7 @@ import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageInfo;
 import br.jpe.main.core.ImageInfoConstants;
+import static br.jpe.main.core.ImageInfoConstants.PIXEL_AREA;
 import br.jpe.main.core.ImageInfoExtractor;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImagePoint;
@@ -28,6 +29,7 @@ import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
+import br.jpe.main.core.scripts.image.extraction.AreaExtractionScript;
 import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
@@ -300,11 +302,13 @@ public class Main {
         ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
                 applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
                 applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).
+                applyScript(new AreaExtractionScript(new ImagePoint(160, 130), PIXEL_AREA)).
                 extract();
 
-//        int count = info.getInt(ImageInfoConstants.PIXEL_COUNT);
+        int areaCount = info.getInt(ImageInfoConstants.PIXEL_AREA);
         System.out.println("***Red Count: " + info.get("P_RED"));
         System.out.println("***Black Count: " + info.get("P_BLACK"));
+        System.out.println("***AREA: " + areaCount);
 
     }
 

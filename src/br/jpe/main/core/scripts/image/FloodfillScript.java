@@ -55,7 +55,7 @@ public class FloodfillScript implements ImageScript {
         while (!queue.isEmpty()) {
             ImagePoint point = queue.poll();
 
-            if (!inBounds(src, point)) {
+            if (!ImageUtils.inBounds(src, point)) {
                 return;
             }
             if (!ImageColor.fromArray(src[point.x][point.y]).equals(targetColor)) {
@@ -65,39 +65,20 @@ public class FloodfillScript implements ImageScript {
             ImagePoint node = point;
             ImagePoint w = node;
             ImagePoint e = node;
-            while (inBounds(mtz, w) && ImageColor.fromArray(mtz[w.x][w.y]).equals(targetColor)) {
+            while (ImageUtils.inBounds(mtz, w) && ImageColor.fromArray(mtz[w.x][w.y]).equals(targetColor)) {
                 w = w.west();
             }
-            while (inBounds(mtz, e) && ImageColor.fromArray(mtz[e.x][e.y]).equals(targetColor)) {
+            while (ImageUtils.inBounds(mtz, e) && ImageColor.fromArray(mtz[e.x][e.y]).equals(targetColor)) {
                 e = e.east();
             }
             for (int x = w.x + 1; x < e.x; x++) {
                 mtz[x][node.y] = replacement.get();
             }
             for (int x = w.x + 1; x < e.x; x++) {
-                push(src, targetColor, new ImagePoint(x, node.y).north());
-                push(src, targetColor, new ImagePoint(x, node.y).south());
+                ImageUtils.push(queue, src, targetColor, new ImagePoint(x, node.y).north());
+                ImageUtils.push(queue, src, targetColor, new ImagePoint(x, node.y).south());
             }
         }
-    }
-
-    /**
-     * Pushes a point into the queue
-     *
-     * @param p
-     */
-    private void push(double[][][] mtz, ImageColor targetColor, ImagePoint p) {
-        if (!inBounds(mtz, p)) {
-            return;
-        }
-        if (!ImageColor.fromArray(mtz[p.x][p.y]).equals(targetColor)) {
-            return;
-        }
-        queue.add(p);
-    }
-
-    private boolean inBounds(double[][][] mtz, ImagePoint point) {
-        return point.x >= 0 && point.y >= 0 && point.x < mtz.length && point.y < mtz[0].length;
     }
 
 }
