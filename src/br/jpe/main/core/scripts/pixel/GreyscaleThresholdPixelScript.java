@@ -34,7 +34,7 @@ public class GreyscaleThresholdPixelScript implements PixelScript {
 
     @Override
     public void run(double[][][] mtz, ImageColor color, int i, int j) {
-        double newPixelValue = (color.getRed() + color.getGreen() + color.getBlue() / 3);
+        double newPixelValue = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
         int v = applyThreshold(newPixelValue, thresholdValue);
         for (int c = 0; c < mtz[i][j].length; c++) {
             mtz[i][j][c] = v;

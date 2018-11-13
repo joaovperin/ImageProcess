@@ -23,7 +23,8 @@ package br.jpe.main.core;
  */
 public interface ImageInfoConstants {
 
-    public static final String PIXEL_COUNT = "PIXEL_COUNT";
+    public static final String PIXEL_COUNT = "P_PIXEL_COUNT";
     public static final String PIXEL_AREA = "P_AREA";
+    public static final String PIXEL_PERIMETER = "P_PERIMETER";
 
 }

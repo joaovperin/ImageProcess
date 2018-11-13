@@ -9,17 +9,15 @@ import br.jpe.main.core.Image;
 import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageInfo;
-import br.jpe.main.core.ImageInfoConstants;
-import static br.jpe.main.core.ImageInfoConstants.PIXEL_AREA;
 import br.jpe.main.core.ImageInfoExtractor;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImagePoint;
 import br.jpe.main.core.ImageProcessor;
+import br.jpe.main.core.ImageSlicer;
 import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
-import br.jpe.main.core.scripts.image.FloodfillScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
@@ -29,7 +27,6 @@ import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
-import br.jpe.main.core.scripts.image.extraction.AreaExtractionScript;
 import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
@@ -290,26 +287,28 @@ public class Main {
         final String imgName = "forms_sample.png";
         final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
-        Image newImage = ImageBuilder.create(imgOriginal).
-                applyScript(new SobelBorderDetectionScript(180)).
-                applyScript(new GreyscaleThresholdPixelScript(20)).
-                applyScript(3, new ErosionMorphScript()).
-                applyScript(3, new DilationMorphScript()).
-                applyScript(new FloodfillScript(new ImagePoint(160, 130), ImageColor.red())).
+        Image newImage = ImageBuilder.create(
+                ImageSlicer.create(imgOriginal).slice(new ImagePoint(40, 50), 230, 140)
+        ).
+                applyScript(new GreyscaleThresholdPixelScript(120)).
+                applyScript(new HoltSkeletonizationScript()).
                 build();
-        ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_".concat(imgName), newImage);
+
+        ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_p_".concat(imgName), newImage);
 
         ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
-                applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
-                applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).
-                applyScript(new AreaExtractionScript(new ImagePoint(160, 130), PIXEL_AREA)).
+                applyScript(new PixelCountExtractionScript(ImageColor.white(), "P_RIMETER")).
                 extract();
-
-        int areaCount = info.getInt(ImageInfoConstants.PIXEL_AREA);
-        System.out.println("***Red Count: " + info.get("P_RED"));
-        System.out.println("***Black Count: " + info.get("P_BLACK"));
-        System.out.println("***AREA: " + areaCount);
-
+        int perimiter = info.getInt("P_RIMETER");
+        System.out.println("***P Count: " + perimiter);
+//        ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
+//                applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
+//                applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).
+//                applyScript(new AreaExtractionScript(new ImagePoint(160, 130), PIXEL_AREA)).
+//                extract();
+//
+//        System.out.println("***Black Count: " + info.get("P_BLACK"));
+//        System.out.println("***AREA: " + areaCount);
     }
 
     private static String getOutputDirectory() {

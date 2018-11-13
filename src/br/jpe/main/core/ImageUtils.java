@@ -28,6 +28,10 @@ import java.util.Queue;
  */
 public class ImageUtils {
 
+    public static final Image copy(Image source) {
+        return new Image(copy(source.getMatrix()));
+    }
+
     public static final double[][][] copy(double[][][] source) {
         int iLen = source.length;
         int jLen = source[0].length;
