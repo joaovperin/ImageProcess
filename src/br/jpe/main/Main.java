@@ -27,6 +27,7 @@ import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
+import br.jpe.main.core.scripts.image.extraction.PerimeterFloodfillExtractionScript;
 import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
@@ -298,9 +299,13 @@ public class Main {
 
         ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
                 applyScript(new PixelCountExtractionScript(ImageColor.white(), "P_RIMETER")).
+                applyScript(new PerimeterFloodfillExtractionScript(new ImagePoint(40, 50), "P_RIN")).
                 extract();
+
         int perimiter = info.getInt("P_RIMETER");
+        int perin = info.getInt("P_RIN");
         System.out.println("***P Count: " + perimiter);
+        System.out.println("***P rin: " + perin);
 //        ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
 //                applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
 //                applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).

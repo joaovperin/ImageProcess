@@ -16,9 +16,11 @@
  */
 package br.jpe.main.core.scripts.load;
 
+import br.jpe.main.core.ImageColor;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import br.jpe.main.core.scripts.LoadPixelScript;
+import br.jpe.main.core.scripts.pixel.GreyscaleDesaturationPixelScript;
 
 /**
  * A pixel script to load images as grayscale using desaturatin method
@@ -27,18 +29,12 @@ import br.jpe.main.core.scripts.LoadPixelScript;
  */
 public class DesaturationProcessScript implements LoadPixelScript {
 
+    private final GreyscaleDesaturationPixelScript s = new GreyscaleDesaturationPixelScript();
+
     @Override
     public void run(double[][][] mtz, BufferedImage img, int i, int j) {
         Color color = new Color(img.getRGB(i, j));
-
-        int max = maxValue(color.getRed(), color.getGreen(), color.getBlue());
-        int min = minValue(color.getRed(), color.getGreen(), color.getBlue());
-        int median = (int) ((max + min) / 2);
-
-        int numBands = mtz[0][0].length;
-        for (int n = 0; n < numBands; n++) {
-            mtz[i][j][n] = median;
-        }
+        s.run(mtz, new ImageColor(color.getRed(), color.getGreen(), color.getBlue()), i, j);
     }
 
     protected static final int maxValue(int a, int b, int c) {
