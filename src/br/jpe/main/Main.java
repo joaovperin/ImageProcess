@@ -18,6 +18,7 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.PaintAllScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
 import br.jpe.main.core.scripts.image.convolution.GaussianBlurFilterScript;
@@ -289,23 +290,29 @@ public class Main {
         final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
         Image newImage = ImageBuilder.create(
-                ImageSlicer.create(imgOriginal).slice(new ImagePoint(40, 50), 230, 140)
+                ImageSlicer.create(imgOriginal).slice(new ImagePoint(35, 45), 250, 160)
         ).
+                //                applyScript(3, new DilationMorphScript()).
+                //                applyScript(3, new ErosionMorphScript()).
                 applyScript(new GreyscaleThresholdPixelScript(120)).
                 applyScript(new HoltSkeletonizationScript()).
+                applyScript(new PaintAllScript(ImageColor.black(), ImageColor.green())).
+                applyScript(new PaintAllScript(ImageColor.white(), ImageColor.black())).
+                applyScript(new PaintAllScript(ImageColor.green(), ImageColor.white())).
                 build();
 
         ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_p_".concat(imgName), newImage);
 
         ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
                 applyScript(new PixelCountExtractionScript(ImageColor.white(), "P_RIMETER")).
-                applyScript(new PerimeterFloodfillExtractionScript(new ImagePoint(40, 50), "P_RIN")).
+                //                applyScript(new PerimeterFloodfillExtractionScript(new ImagePoint(99, 67), "P_RIN")).
                 extract();
+        ImageWriter.save(getOutputDirectory() + "prc_sandbox_forms_px_".concat(imgName), newImage);
 
         int perimiter = info.getInt("P_RIMETER");
-        int perin = info.getInt("P_RIN");
+//        int perin = info.getInt("P_RIN");
         System.out.println("***P Count: " + perimiter);
-        System.out.println("***P rin: " + perin);
+//        System.out.println("***P rin: " + perin);
 //        ImageInfo info = ImageInfoExtractor.create(newImage.getMatrix()).
 //                applyScript(new PixelCountExtractionScript(ImageColor.red(), "P_RED")).
 //                applyScript(new PixelCountExtractionScript(ImageColor.black(), "P_BLACK")).

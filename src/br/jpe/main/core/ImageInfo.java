@@ -56,7 +56,10 @@ public class ImageInfo implements ImageInfoConstants {
     }
 
     public String get(String key) {
-        return info.get(key).toString();
+        if (info.containsKey(key)) {
+            return info.get(key).toString();
+        }
+        return "";
     }
 
     public <T> T get(String key, Class<T> type) {

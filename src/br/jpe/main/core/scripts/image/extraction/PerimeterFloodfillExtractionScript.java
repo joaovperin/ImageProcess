@@ -20,8 +20,10 @@ import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageInfo;
 import br.jpe.main.core.ImageInfoConstants;
 import br.jpe.main.core.ImagePoint;
+import br.jpe.main.core.ImageProcessor;
 import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.InfoExtractorScript;
+import br.jpe.main.core.scripts.PixelScript;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -45,12 +47,8 @@ public class PerimeterFloodfillExtractionScript implements InfoExtractorScript, 
 
     @Override
     public final void run(double[][][] mtz, ImageInfo info) {
-        int paint = 0;
-        int removed = 0;
-        
-        ImageColor replacement = ImageColor.blue();
-        
 
+        ImageColor replacement = ImageColor.blue();
         ImageColor targetColor = ImageColor.fromArray(mtz[seed.x][seed.y]);
         double[][][] src = ImageUtils.copy(mtz);
 
@@ -59,42 +57,47 @@ public class PerimeterFloodfillExtractionScript implements InfoExtractorScript, 
             ImagePoint point = queue.poll();
 
             if (!ImageUtils.inBounds(src, point)) {
-                return;
+                continue;
             }
             if (!ImageColor.fromArray(src[point.x][point.y]).equals(targetColor)) {
-                return;
+                continue;
             }
 
             ImagePoint node = point;
             ImagePoint w = node;
             ImagePoint e = node;
-            while (ImageUtils.inBounds(mtz, w) && ImageColor.fromArray(mtz[w.x][w.y]).equals(targetColor)) {
+            while (ImageUtils.inBounds(src, w) && ImageColor.fromArray(src[w.x][w.y]).equals(targetColor)) {
                 w = w.west();
             }
-            while (ImageUtils.inBounds(mtz, e) && ImageColor.fromArray(mtz[e.x][e.y]).equals(targetColor)) {
+            while (ImageUtils.inBounds(src, e) && ImageColor.fromArray(src[e.x][e.y]).equals(targetColor)) {
                 e = e.east();
             }
             for (int x = w.x + 1; x < e.x; x++) {
-                mtz[x][node.y] = replacement.get();
-                paint++;
+                src[x][node.y] = replacement.get();
             }
             for (int x = w.x + 1; x < e.x; x++) {
-                ImagePoint north = new ImagePoint(x, node.y).north();
-                if (!ImageUtils.inBounds(src, north)) {
-                    removed++;
-                } else {
-                    ImageUtils.push(queue, src, targetColor, north);
-                }
-                ImagePoint south = new ImagePoint(x, node.y).south();
-                if (!ImageUtils.inBounds(src, south)) {
-                    removed++;
-                } else {
-                    ImageUtils.push(queue, src, targetColor, south);
-                }
+                ImageUtils.push(queue, src, targetColor, new ImagePoint(x, node.y).north());
+                ImageUtils.push(queue, src, targetColor, new ImagePoint(x, node.y).south());
             }
         }
 
-        info.put(label, removed);
+        PixelCounter pc = new PixelCounter();
+        pc.count = 0;
+        ImageProcessor.process(src, pc);
+        info.put(label, pc.count);
+    }
+
+    private class PixelCounter implements PixelScript {
+
+        long count;
+        ImageColor targetColor = ImageColor.white();
+
+        @Override
+        public void run(double[][][] mtz, ImageColor c, int i, int j) {
+            if (c.equals(targetColor)) {
+                count++;
+            }
+        }
     }
 
 }
