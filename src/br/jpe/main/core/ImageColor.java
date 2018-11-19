@@ -16,6 +16,9 @@
  */
 package br.jpe.main.core;
 
+import java.util.Random;
+import java.util.Set;
+
 /**
  * An image color
  *
@@ -75,6 +78,17 @@ public class ImageColor {
 
     public static final ImageColor blue() {
         return new ImageColor(0, 0, 255);
+    }
+
+    public static final ImageColor random(Set<ImageColor> colors) {
+        Random r = new Random();
+        ImageColor c;
+        do {
+            c = new ImageColor(
+                    Math.round(r.nextFloat() * 255), Math.round(r.nextFloat() * 255), Math.round(r.nextFloat() * 255)
+            );
+        } while (colors.contains(c));
+        return c;
     }
 
     @Override

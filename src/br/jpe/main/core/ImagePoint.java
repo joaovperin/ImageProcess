@@ -31,6 +31,14 @@ public class ImagePoint {
         this.y = y;
     }
 
+    public ImagePoint northwest() {
+        return new ImagePoint(x - 1, y - 1);
+    }
+
+    public ImagePoint southwest() {
+        return new ImagePoint(x - 1, y + 1);
+    }
+
     public ImagePoint west() {
         return new ImagePoint(x - 1, y);
     }
@@ -39,8 +47,16 @@ public class ImagePoint {
         return new ImagePoint(x + 1, y);
     }
 
+    public ImagePoint northeast() {
+        return new ImagePoint(x + 1, y - 1);
+    }
+
     public ImagePoint south() {
         return new ImagePoint(x, y + 1);
+    }
+
+    public ImagePoint southeast() {
+        return new ImagePoint(x + 1, y + 1);
     }
 
     public ImagePoint north() {

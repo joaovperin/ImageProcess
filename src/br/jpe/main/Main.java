@@ -18,6 +18,7 @@ import br.jpe.main.core.ImageWriter;
 import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
+import br.jpe.main.core.scripts.image.BinaryLabelingScript;
 import br.jpe.main.core.scripts.image.PaintAllScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
@@ -28,7 +29,6 @@ import br.jpe.main.core.scripts.image.convolution.ModeBlurFilterScript;
 import br.jpe.main.core.scripts.image.convolution.RobertsBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.RobinsonBorderDetectionScript;
 import br.jpe.main.core.scripts.image.convolution.SobelBorderDetectionScript;
-import br.jpe.main.core.scripts.image.extraction.PerimeterFloodfillExtractionScript;
 import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import br.jpe.main.core.scripts.image.geometric.RotationTransformScript;
 import br.jpe.main.core.scripts.image.geometric.TranslationTransformScript;
@@ -38,6 +38,7 @@ import br.jpe.main.core.scripts.pixel.GreyscaleThresholdPixelScript;
 import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Main program entry point.
@@ -56,7 +57,7 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        sandbox();
+        binaryLabeling();
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -321,6 +322,28 @@ public class Main {
 //
 //        System.out.println("***Black Count: " + info.get("P_BLACK"));
 //        System.out.println("***AREA: " + areaCount);
+    }
+
+    private static void binaryLabeling() throws IOException {
+        final String imgName = "forms_sample.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
+
+        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black());
+        Image newImage = ImageBuilder.create(imgOriginal).
+                applyScript(new InvertColorPixelScript()).
+                applyScript(new GreyscaleThresholdPixelScript(95)).
+                applyScript(new InvertColorPixelScript()).
+                applyScript(new HoltSkeletonizationScript()).
+                applyScript(binaryLabeler).
+                build();
+
+        ImageWriter.save(getOutputDirectory() + "prc_binaryLabeling_".concat(imgName), newImage);
+
+        Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
+        colors.forEach((k, v) -> {
+            System.out.println(v + "=" + k);
+        });
+
     }
 
     private static String getOutputDirectory() {

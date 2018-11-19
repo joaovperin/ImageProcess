@@ -24,17 +24,17 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Floodfill script
+ * Floodfill script for four directions
  *
  * @author joaovperin
  */
-public class FloodfillScript implements ImageScript {
+public class FloodfillFourDirectionsScript implements ImageScript {
 
     private final ImagePoint seed;
     private final ImageColor replacement;
     private final Queue<ImagePoint> queue;
 
-    public FloodfillScript(ImagePoint seed, ImageColor replacement) {
+    public FloodfillFourDirectionsScript(ImagePoint seed, ImageColor replacement) {
         this.seed = seed;
         this.replacement = replacement;
         this.queue = new LinkedList<>();
