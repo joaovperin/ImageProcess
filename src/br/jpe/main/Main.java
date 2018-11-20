@@ -57,7 +57,8 @@ public class Main {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        binaryLabeling();
+        binaryLabelingWithLeaves();
+        Runtime.getRuntime().exec("explorer ".concat(getOutputDirectory()));
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -328,12 +329,12 @@ public class Main {
         final String imgName = "forms_sample.png";
         final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asAverageGreyscale();
 
-        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black());
+        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black(), true);
         Image newImage = ImageBuilder.create(imgOriginal).
-                applyScript(new InvertColorPixelScript()).
-                applyScript(new GreyscaleThresholdPixelScript(95)).
-                applyScript(new InvertColorPixelScript()).
-                applyScript(new HoltSkeletonizationScript()).
+                //                applyScript(new InvertColorPixelScript()).
+                //                applyScript(new GreyscaleThresholdPixelScript(95)).
+                //                applyScript(new InvertColorPixelScript()).
+                //                applyScript(new HoltSkeletonizationScript()).
                 applyScript(binaryLabeler).
                 build();
 
@@ -346,11 +347,38 @@ public class Main {
 
     }
 
+    private static void binaryLabelingWithLeaves() throws IOException {
+        final String imgName = "leaf_1.png";
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asRedSingleColorGreyscale();
+
+//        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black(), true);
+        Image newImage = ImageBuilder.create(imgOriginal).
+                //                                applyScript(new ThresholdPixelScript(140)).
+                applyScript((mtz, c, i, j) -> {
+                    int v = ((c.getRed()*2) / 3 > 122 ? 255 : 0);
+                    for (int k = 0; k < 3; k++) {
+                        mtz[i][j][k] = v;
+                    }
+                }).
+                //                applyScript(new GreyscaleThresholdPixelScript(95)).
+                //                applyScript(new InvertColorPixelScript()).
+                //                applyScript(new HoltSkeletonizationScript()).
+                //                                applyScript(binaryLabeler).
+                build();
+
+        ImageWriter.save(getOutputDirectory() + "prc_leaves_1_".concat(imgName), newImage);
+
+//        Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
+//        colors.forEach((k, v) -> {
+//            System.out.println(v + "=" + k);
+//        });
+    }
+
     private static String getOutputDirectory() {
         String javaHome = System.getProperty("java.home");
         if (javaHome != null && javaHome.contains("C:\\RECH")) {
-            return "T:/TMP/perinfeevale/img/";
+            return "T:\\TMP\\perinfeevale\\img\\";
         }
-        return "D:/Samples/results/";
+        return "D:\\Samples\\results\\";
     }
 }

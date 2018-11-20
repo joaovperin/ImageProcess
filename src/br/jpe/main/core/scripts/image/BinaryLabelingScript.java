@@ -18,6 +18,7 @@ package br.jpe.main.core.scripts.image;
 
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImagePoint;
+import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.ImageScript;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +31,16 @@ import java.util.Map;
 public class BinaryLabelingScript implements ImageScript {
 
     private final ImageColor bgColor;
+    private final boolean fill;
     private final Map<ImageColor, ImagePoint> labels;
 
     public BinaryLabelingScript(ImageColor bgColor) {
+        this(bgColor, false);
+    }
+
+    public BinaryLabelingScript(ImageColor bgColor, boolean fill) {
         this.bgColor = bgColor;
+        this.fill = fill;
         this.labels = new HashMap<>();
     }
 
@@ -48,11 +55,23 @@ public class BinaryLabelingScript implements ImageScript {
                 ImageColor color = ImageColor.fromArray(src[i][j]);
                 // If the color changed
                 if (!color.equals(bgColor) && !labels.containsKey(color)) {
+                    // Paint with a random color
                     ImageColor newColor = ImageColor.random(labels.keySet());
-                    // Paint
-                    FloodfillEightDirectionsScript floodfillScript
-                            = new FloodfillEightDirectionsScript(new ImagePoint(i, j), newColor);
-                    floodfillScript.run(src);
+                    ImagePoint p = new ImagePoint(i, j);
+                    new FloodfillEightDirectionsScript(p, newColor).run(src);
+                    // If have to fill, fill it all
+                    if (fill) {
+
+                        if (ImageColor.fromArray(src[p.x][p.y]).equals(bgColor) && !ImageColor.
+                                fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
+//                            new FloodfillEightDirectionsScript(p, newColor).run(src);
+                            // TA DANDO EXCEPTION AQUI (OUT OF BOUNDS)
+                        } else if (ImageUtils.inBounds(src, new ImagePoint(p.x - 1, p.y + 1)) &&
+                                !ImageColor.fromArray(src[p.x][p.y]).equals(bgColor) &&
+                                ImageColor.fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
+                            new FloodfillEightDirectionsScript(p.southeast(), newColor).run(src);
+                        }
+                    }
                     // Put the new label
                     labels.put(newColor, new ImagePoint(i, j));
                 }
