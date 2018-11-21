@@ -19,6 +19,7 @@ import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.BinaryLabelingScript;
+import br.jpe.main.core.scripts.image.FloodfillEightDirectionsScript;
 import br.jpe.main.core.scripts.image.PaintAllScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
@@ -58,7 +59,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         binaryLabelingWithLeaves();
-        Runtime.getRuntime().exec("explorer ".concat(getOutputDirectory()));
+//        Runtime.getRuntime().exec("explorer ".concat(getOutputDirectory()));
     }
 
     private static void chainedFiltersExample() throws IOException {
@@ -347,31 +348,73 @@ public class Main {
 
     }
 
+    private static boolean isBetween(int pValue, int target, int tolerance) {
+        int tValue = (int) ((double) target * (double) tolerance) / 100;
+        int min = target - tValue;
+        int max = target + tValue;
+        return (pValue >= min && pValue <= max);
+    }
+
     private static void binaryLabelingWithLeaves() throws IOException {
         final String imgName = "leaf_1.png";
-        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asRedSingleColorGreyscale();
+        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
-//        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black(), true);
+        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.white(), 20, true);
         Image newImage = ImageBuilder.create(imgOriginal).
-                //                                applyScript(new ThresholdPixelScript(140)).
                 applyScript((mtz, c, i, j) -> {
-                    int v = ((c.getRed()*2) / 3 > 122 ? 255 : 0);
+                    int r = c.getRed();
+                    int g = c.getGreen();
+                    int b = c.getBlue();
+
+                    int v = 255; // defaults black
+                    if (isBetween(r, 208, 70) && isBetween(g, 211, 50) && isBetween(b, 70, 50)) { // Leaf Green (body)
+                        v = 0;
+                    }
+                    if (isBetween(r, 114, 72) && isBetween(g, 36, 43) && isBetween(b, 32, 45)
+                            || // Wine
+                            isBetween(r, 216, 71) && isBetween(g, 109, 43) && isBetween(b, 93, 45)) { // Copper red
+                        v = 255;
+                    } else {
+                        if (isBetween(r, 150, 70) && isBetween(g, 155, 60) && isBetween(b, 58, 35)) { // Dark Green (veins)
+                            v = 0;
+                        }
+                    }
+                    if (isBetween(r, 142, 30) && isBetween(g, 132, 22) && isBetween(b, 96, 22)) { // LightBrown
+                        v = 0;
+                    }
+                    if (isBetween(r, 115, 30) && isBetween(g, 89, 22) && isBetween(b, 76, 22)) { // DarkBrown
+                        v = 0;
+                    }
+
+                    final int tB = 100;
+                    final int min = 15;
+                    if (isBetween(r, min, tB) || isBetween(g, min, tB) || isBetween(b, min, tB)) { // Gray
+                        v = 0;
+                    }
+
                     for (int k = 0; k < 3; k++) {
                         mtz[i][j][k] = v;
                     }
                 }).
-                //                applyScript(new GreyscaleThresholdPixelScript(95)).
+//                applyScript(new FloodfillEightDirectionsScript(new ImagePoint(0, 0), ImageColor.black())).
+                applyScript(new DilationMorphScript()).
+                applyScript(new ErosionMorphScript()).
+                applyScript(binaryLabeler).
+                //                                applyScript(6,new ErosionMorphScript()).
+                //                                applyScript(3,new DilationMorphScript()).
+                //                                applyScript(3,new ErosionMorphScript()).
+                //                                applyScript(new DilationMorphScript(), new ErosionMorphScript()).
                 //                applyScript(new InvertColorPixelScript()).
                 //                applyScript(new HoltSkeletonizationScript()).
                 //                                applyScript(binaryLabeler).
                 build();
 
-        ImageWriter.save(getOutputDirectory() + "prc_leaves_1_".concat(imgName), newImage);
+        ImageWriter.save(getOutputDirectory() + "a_prc_leaves_1_".concat(imgName), newImage);
 
-//        Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
-//        colors.forEach((k, v) -> {
-//            System.out.println(v + "=" + k);
-//        });
+        Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
+        colors.forEach((k, v) -> {
+            System.out.println(v + "=" + k);
+        });
     }
 
     private static String getOutputDirectory() {

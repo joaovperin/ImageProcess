@@ -17,9 +17,12 @@
 package br.jpe.main.core.scripts.image;
 
 import br.jpe.main.core.ImageColor;
+import static br.jpe.main.core.ImageInfoConstants.PIXEL_COUNT;
+import br.jpe.main.core.ImageInfoExtractor;
 import br.jpe.main.core.ImagePoint;
 import br.jpe.main.core.ImageUtils;
 import br.jpe.main.core.scripts.ImageScript;
+import br.jpe.main.core.scripts.image.extraction.PixelCountExtractionScript;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,12 +37,19 @@ public class BinaryLabelingScript implements ImageScript {
     private final boolean fill;
     private final Map<ImageColor, ImagePoint> labels;
 
+    private final int minimumSize;
+
     public BinaryLabelingScript(ImageColor bgColor) {
         this(bgColor, false);
     }
 
     public BinaryLabelingScript(ImageColor bgColor, boolean fill) {
+        this(bgColor, 1, fill);
+    }
+
+    public BinaryLabelingScript(ImageColor bgColor, int minimumSize, boolean fill) {
         this.bgColor = bgColor;
+        this.minimumSize = minimumSize;
         this.fill = fill;
         this.labels = new HashMap<>();
     }
@@ -66,14 +76,27 @@ public class BinaryLabelingScript implements ImageScript {
                                 fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
 //                            new FloodfillEightDirectionsScript(p, newColor).run(src);
                             // TA DANDO EXCEPTION AQUI (OUT OF BOUNDS)
-                        } else if (ImageUtils.inBounds(src, new ImagePoint(p.x - 1, p.y + 1)) &&
-                                !ImageColor.fromArray(src[p.x][p.y]).equals(bgColor) &&
-                                ImageColor.fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
+                        } else if (ImageUtils.inBounds(src, new ImagePoint(p.x - 1, p.y + 1))
+                                && !ImageColor.fromArray(src[p.x][p.y]).equals(bgColor)
+                                && ImageColor.fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
                             new FloodfillEightDirectionsScript(p.southeast(), newColor).run(src);
                         }
                     }
+
+                    boolean putColor = false;
+                    if (minimumSize > 1) {
+                        if (ImageInfoExtractor.create(src).
+                                applyScript(new PixelCountExtractionScript(newColor)).
+                                extract().getInt(PIXEL_COUNT) >= 20) {
+                            putColor = true;
+                        }
+                    } else {
+                        putColor = true;
+                    }
                     // Put the new label
-                    labels.put(newColor, new ImagePoint(i, j));
+                    if (putColor) {
+                        labels.put(newColor, new ImagePoint(i, j));
+                    }
                 }
             }
         }
