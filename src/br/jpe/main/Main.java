@@ -9,6 +9,7 @@ import br.jpe.main.core.Image;
 import br.jpe.main.core.ImageBuilder;
 import br.jpe.main.core.ImageColor;
 import br.jpe.main.core.ImageInfo;
+import static br.jpe.main.core.ImageInfoConstants.PIXEL_COUNT;
 import br.jpe.main.core.ImageInfoExtractor;
 import br.jpe.main.core.ImageLoader;
 import br.jpe.main.core.ImagePoint;
@@ -19,7 +20,6 @@ import br.jpe.main.core.scripts.image.GeometricTransformScript;
 import br.jpe.main.core.scripts.ImageScript;
 import br.jpe.main.core.scripts.PixelScript;
 import br.jpe.main.core.scripts.image.BinaryLabelingScript;
-import br.jpe.main.core.scripts.image.FloodfillEightDirectionsScript;
 import br.jpe.main.core.scripts.image.PaintAllScript;
 import br.jpe.main.core.scripts.image.convolution.DilationMorphScript;
 import br.jpe.main.core.scripts.image.convolution.ErosionMorphScript;
@@ -39,7 +39,10 @@ import br.jpe.main.core.scripts.pixel.GreyscaleThresholdPixelScript;
 import br.jpe.main.core.scripts.pixel.InvertColorPixelScript;
 import br.jpe.main.core.scripts.pixel.ThresholdPixelScript;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main program entry point.
@@ -356,64 +359,81 @@ public class Main {
     }
 
     private static void binaryLabelingWithLeaves() throws IOException {
-        final String imgName = "leaf_1.png";
-        final Image imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
 
-        BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.white(), 20, true);
-        Image newImage = ImageBuilder.create(imgOriginal).
-                applyScript((mtz, c, i, j) -> {
-                    int r = c.getRed();
-                    int g = c.getGreen();
-                    int b = c.getBlue();
+        Arrays.asList("leaf_1.png", "leaf_2.png", "leaf_3.png", "leaf_4.png").forEach(imgName -> {
 
-                    int v = 255; // defaults black
-                    if (isBetween(r, 208, 70) && isBetween(g, 211, 50) && isBetween(b, 70, 50)) { // Leaf Green (body)
-                        v = 0;
-                    }
-                    if (isBetween(r, 114, 72) && isBetween(g, 36, 43) && isBetween(b, 32, 45)
-                            || // Wine
-                            isBetween(r, 216, 71) && isBetween(g, 109, 43) && isBetween(b, 93, 45)) { // Copper red
-                        v = 255;
-                    } else {
-                        if (isBetween(r, 150, 70) && isBetween(g, 155, 60) && isBetween(b, 58, 35)) { // Dark Green (veins)
+            System.out.println("****** PROCESSING: " + imgName);
+
+            Image imgOriginal = null;
+            try {
+                imgOriginal = ImageLoader.fromResources("images/" + imgName).asOriginal();
+            } catch (IOException ex) {
+            }
+
+            final int MIN_AREA = 400;
+
+            BinaryLabelingScript binaryLabeler = new BinaryLabelingScript(ImageColor.black(), MIN_AREA, true);
+            Image newImage = ImageBuilder.create(imgOriginal).
+                    applyScript((mtz, c, i, j) -> {
+                        int r = c.getRed();
+                        int g = c.getGreen();
+                        int b = c.getBlue();
+
+                        int v = 0; // defaults black
+//                    if (isBetween(r, 229, 6) && isBetween(g, 210, 8) && isBetween(b, 70, 18)) { // Leaf Green (body)
+//                        v = 255;
+//                    }
+//                    if (isBetween(r, 133, 15) && isBetween(g, 117, 15) && isBetween(b, 95, 15)) { // LightBrown (body)
+//                        v = 255;
+//                    }
+//                    if (isBetween(r, 100, 35) && isBetween(g, 55, 25) && isBetween(b, 40, 25)) { // DarkBrown (body) - NOT GOOD YET
+//                        v = 255;
+//                    }
+//                    if (isBetween(r, 208, 70) && isBetween(g, 211, 50) && isBetween(b, 70, 50)) { // Leaf Green (body)
+//                        v = 0;
+//                    }
+                        if (isBetween(r, 114, 72) && isBetween(g, 36, 43) && isBetween(b, 32, 45) || // Wine
+                                isBetween(r, 216, 71) && isBetween(g, 109, 43) && isBetween(b, 93, 45)) { // Copper red
+                            v = 255;
+                        } else {
+//                        if (isBetween(r, 150, 70) && isBetween(g, 155, 60) && isBetween(b, 58, 35)) { // Dark Green (veins)
+//                            v = 0;
+//                        }
+                        }
+                        if (isBetween(r, 142, 30) && isBetween(g, 132, 22) && isBetween(b, 96, 22)) { // LightBrown
                             v = 0;
                         }
-                    }
-                    if (isBetween(r, 142, 30) && isBetween(g, 132, 22) && isBetween(b, 96, 22)) { // LightBrown
-                        v = 0;
-                    }
-                    if (isBetween(r, 115, 30) && isBetween(g, 89, 22) && isBetween(b, 76, 22)) { // DarkBrown
-                        v = 0;
-                    }
+                        if (isBetween(r, 115, 30) && isBetween(g, 89, 22) && isBetween(b, 76, 22)) { // DarkBrown
+                            v = 0;
+                        }
+//
+//                    final int tB = 100;
+//                    final int min = 15;
+//                    if (isBetween(r, min, tB) || isBetween(g, min, tB) || isBetween(b, min, tB)) { // Gray
+//                        v = 0;
+//                    }
 
-                    final int tB = 100;
-                    final int min = 15;
-                    if (isBetween(r, min, tB) || isBetween(g, min, tB) || isBetween(b, min, tB)) { // Gray
-                        v = 0;
-                    }
+                        for (int k = 0; k < 3; k++) {
+                            mtz[i][j][k] = v;
+                        }
+                    }).
+                    applyScript(binaryLabeler).
+                    build();
 
-                    for (int k = 0; k < 3; k++) {
-                        mtz[i][j][k] = v;
-                    }
-                }).
-//                applyScript(new FloodfillEightDirectionsScript(new ImagePoint(0, 0), ImageColor.black())).
-                applyScript(new DilationMorphScript()).
-                applyScript(new ErosionMorphScript()).
-                applyScript(binaryLabeler).
-                //                                applyScript(6,new ErosionMorphScript()).
-                //                                applyScript(3,new DilationMorphScript()).
-                //                                applyScript(3,new ErosionMorphScript()).
-                //                                applyScript(new DilationMorphScript(), new ErosionMorphScript()).
-                //                applyScript(new InvertColorPixelScript()).
-                //                applyScript(new HoltSkeletonizationScript()).
-                //                                applyScript(binaryLabeler).
-                build();
+            try {
+                ImageWriter.save(getOutputDirectory() + "a_prc_leaves_".concat(imgName), newImage);
+            } catch (IOException ex) {
+            }
 
-        ImageWriter.save(getOutputDirectory() + "a_prc_leaves_1_".concat(imgName), newImage);
+            Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
+            colors.forEach((ImageColor k, ImagePoint v) -> {
+                final int pCnt = ImageInfoExtractor.create(newImage.getMatrix()).
+                        applyScript(new PixelCountExtractionScript(k)).
+                        extract().getInt(PIXEL_COUNT);
 
-        Map<ImageColor, ImagePoint> colors = binaryLabeler.getColors();
-        colors.forEach((k, v) -> {
-            System.out.println(v + "=" + k);
+                System.out.println(v + "=" + k + " --> " + pCnt);
+            });
+            System.out.println("****** ...................... ");
         });
     }
 

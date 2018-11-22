@@ -33,6 +33,8 @@ import java.util.Map;
  */
 public class BinaryLabelingScript implements ImageScript {
 
+    private static final int MIN_SIZE = 1;
+
     private final ImageColor bgColor;
     private final boolean fill;
     private final Map<ImageColor, ImagePoint> labels;
@@ -44,7 +46,7 @@ public class BinaryLabelingScript implements ImageScript {
     }
 
     public BinaryLabelingScript(ImageColor bgColor, boolean fill) {
-        this(bgColor, 1, fill);
+        this(bgColor, MIN_SIZE, fill);
     }
 
     public BinaryLabelingScript(ImageColor bgColor, int minimumSize, boolean fill) {
@@ -72,23 +74,27 @@ public class BinaryLabelingScript implements ImageScript {
                     // If have to fill, fill it all
                     if (fill) {
 
+                        // Paint it like the background
                         if (ImageColor.fromArray(src[p.x][p.y]).equals(bgColor) && !ImageColor.
                                 fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
-//                            new FloodfillEightDirectionsScript(p, newColor).run(src);
-                            // TA DANDO EXCEPTION AQUI (OUT OF BOUNDS)
-                        } else if (ImageUtils.inBounds(src, new ImagePoint(p.x - 1, p.y + 1))
-                                && !ImageColor.fromArray(src[p.x][p.y]).equals(bgColor)
-                                && ImageColor.fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
+                            new FloodfillEightDirectionsScript(p, bgColor).run(src);
+                            // Paint it with the new chosen color
+                        } else if (ImageUtils.inBounds(src, new ImagePoint(p.x - 1, p.y + 1)) &&
+                                !ImageColor.fromArray(src[p.x][p.y]).equals(bgColor) &&
+                                ImageColor.fromArray(src[p.x - 1][p.y + 1]).equals(bgColor)) {
                             new FloodfillEightDirectionsScript(p.southeast(), newColor).run(src);
                         }
                     }
 
                     boolean putColor = false;
-                    if (minimumSize > 1) {
+                    if (minimumSize > MIN_SIZE) {
                         if (ImageInfoExtractor.create(src).
                                 applyScript(new PixelCountExtractionScript(newColor)).
-                                extract().getInt(PIXEL_COUNT) >= 20) {
+                                extract().getInt(PIXEL_COUNT) >= minimumSize) {
                             putColor = true;
+                        } else if (fill) {
+                            putColor = false;
+                            new PaintAllScript(newColor, bgColor).run(src);
                         }
                     } else {
                         putColor = true;
@@ -96,6 +102,8 @@ public class BinaryLabelingScript implements ImageScript {
                     // Put the new label
                     if (putColor) {
                         labels.put(newColor, new ImagePoint(i, j));
+                    } else if (fill) {
+                        new PaintAllScript(newColor, bgColor).run(src);
                     }
                 }
             }
